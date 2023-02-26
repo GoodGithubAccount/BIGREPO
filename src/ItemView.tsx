@@ -10,16 +10,10 @@ function ItemView() {
         { name: "COMPUTER", price: 235, id: 4 },
         { name: "Teaspoon", price: 123, id: 5 }
       ];
-
-    let divT = document.createElement("div");
-
-    for (let i = 0; i < 3; i++) {
-        let p = document.createElement("p");
-        divT.append("TEST", p)
-    }
-
+      
     return (
         <div>
+            <h1> ITEMS </h1>
             {itemList.map((item) => (
             <ItemCreate
                 name= {item.name}

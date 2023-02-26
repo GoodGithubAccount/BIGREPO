@@ -29,8 +29,8 @@ function AddItemToBasket(props: itemData){
     console.log(basket)
 }
 
-export function GetItemBasket(){
-    {console.log(i)}
-}
+export function GetItemBasket(): basketItem[] { return basket }
 
 export default AddItemToBasket
+
+export type { basketItem }
