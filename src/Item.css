@@ -1,0 +1,8 @@
+.item{
+  padding: 1em;
+}
+
+.price{
+  display: inline-block;
+  padding-right: 1em;
+}
