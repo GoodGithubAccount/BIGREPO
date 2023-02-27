@@ -1,31 +1,24 @@
-import React from 'react'
-import ItemCreate from './Item'
-import { GetItemBasket, basketItem } from './ShoppingHandler';
-import { useState } from 'react'
+import React, { useContext } from 'react'
+import { BasketContext } from './ShoppingHandler'
+import { itemData } from './Item'
 
-function BasketView() {
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-
-    var basket: basketItem[] = GetItemBasket()
-
-    return (
-        <div>
-            <h1> BASKET </h1>
-
-            { basket.map((item) => (
-            <ItemCreate
-                name= {item.itemData.name}
-                price = {item.itemData.price}
-                id = {item.itemData.id}
-            />
-            ))}
-            
-            <button onClick={forceUpdate}>Force basket update</button>
-        </div>
-        
-    );
-
+interface basketItem {
+  itemData: itemData
+  amount: number
 }
 
-export default BasketView
+export const GetItemBasket = () => {
+  const { basket, removeFromBasket } = useContext(BasketContext)
+
+  return (
+    <div>
+      <h1>Basket</h1>
+      {basket.map((item) => (
+        <div key={item.itemData.id}>
+          {item.itemData.name} x {item.amount}
+          <button onClick={() => removeFromBasket(item)}>Remove</button>
+        </div>
+      ))}
+    </div>
+  )
+}

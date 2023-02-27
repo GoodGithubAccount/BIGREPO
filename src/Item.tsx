@@ -1,26 +1,24 @@
-import React from 'react'
-import { useState } from 'react'
-import './Item.css'
-import AddItemToBasket from './ShoppingHandler'
+import React, { useContext } from 'react'
+import { BasketContext } from './ShoppingHandler'
 
-
-interface itemData {
-    name: string;
-    id: number;
-    price: number;
+export interface itemData {
+  name: string
+  id: number
+  price: number
 }
 
-function ItemCreate(props: itemData) {
-    return (
-        <div className="item">
-          <h3>{props.name}</h3>
-          <p className = "price"> Price: {props.price} </p>
-            <button className= "itemButton" onClick={() => AddItemToBasket(props)}>
-            ADD ITEM
-            </button>
-          </div>
-      )
+const ItemCreate = (props: itemData) => {
+  const { addToBasket } = useContext(BasketContext)
+
+  return (
+    <div className="item">
+      <h3>{props.name}</h3>
+      <p className="price">Price: {props.price}</p>
+      <button className="itemButton" onClick={() => addToBasket(props)}>
+        ADD ITEM
+      </button>
+    </div>
+  )
 }
 
 export default ItemCreate
-export type { itemData }

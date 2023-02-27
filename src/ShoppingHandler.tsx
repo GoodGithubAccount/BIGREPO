@@ -1,36 +1,50 @@
-import React from 'react'
-import { itemData } from './Item'
-
-let i = 0
+import React, { createContext, useState } from 'react'
+import ItemCreate, { itemData } from './Item'
+import { GetItemBasket } from './BasketView'
+import ItemView from './ItemView'
 
 interface basketItem {
-    itemData: itemData,
-    amount: number
+  itemData: itemData,
+  amount: number
 }
 
-var basket: basketItem[] = []
+export const BasketContext = createContext({
+  basket: [] as basketItem[],
+  addToBasket: (item: itemData) => {},
+  removeFromBasket: (item: basketItem) => {}
+})
 
-function AddItemToBasket(props: itemData){
-    var item: basketItem = { itemData: props, amount: 1 };
+const ShoppingHandler = () => {
+  const [basket, setBasket] = useState<basketItem[]>([])
 
-    var itemExists: boolean = false
+  const addToBasket = (item: itemData) => {
+    const itemExists = basket.some((element) => element.itemData.id === item.id)
 
-    basket.forEach( (element) => {
-        if(element.itemData.id == item.itemData.id){
-            element.amount = element.amount + 1;
-            itemExists = true
+    if (itemExists) {
+      setBasket(basket.map((element) => {
+        if (element.itemData.id === item.id) {
+          return {
+            ...element,
+            amount: element.amount + 1
+          }
         }
-    });
-
-    if(!itemExists){
-        basket.push(item)
+        return element
+      }))
+    } else {
+      setBasket([...basket, { itemData: item, amount: 1 }])
     }
+  }
 
-    console.log(basket)
+  const removeFromBasket = (item: basketItem) => {
+    setBasket(basket.filter((element) => element.itemData.id !== item.itemData.id))
+  }
+
+  return (
+    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket }}>
+      <ItemView />
+      <GetItemBasket />
+    </BasketContext.Provider>
+  )
 }
 
-export function GetItemBasket(): basketItem[] { return basket }
-
-export default AddItemToBasket
-
-export type { basketItem }
+export default ShoppingHandler
