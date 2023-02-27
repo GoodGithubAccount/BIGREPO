@@ -12,7 +12,7 @@ function ItemView() {
       ];
       
     return (
-        <div>
+        <div className="itemVIEW">
             <h1> ITEMS </h1>
             {itemList.map((item) => (
             <ItemCreate

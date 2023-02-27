@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { BasketContext } from './ShoppingHandler'
+import './Item.css'
 
 export interface itemData {
   name: string
