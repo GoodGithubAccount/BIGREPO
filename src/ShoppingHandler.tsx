@@ -10,8 +10,12 @@ type BasketItem = {
 
 export const BasketContext = createContext({
 	basket: [] as BasketItem[],
-	addToBasket(item: ItemData) {},
-	removeFromBasket(item: BasketItem) {},
+	addToBasket(item: ItemData) {
+		// Ding
+	},
+	removeFromBasket(item: BasketItem) {
+		// Dong
+	},
 });
 
 const ShoppingHandler = () => {

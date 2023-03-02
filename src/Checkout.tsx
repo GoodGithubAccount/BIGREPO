@@ -14,7 +14,7 @@ type Product = {
 // Define the Checkout component as a functional component
 const Checkout: React.FC = () => {
 	// Define a state variable to hold the product data
-	const [product, setProduct] = useState<Product | undefined>(null);
+	const [product, setProduct] = useState<Product | undefined>();
 
 	// Use the useEffect hook to fetch the product data from the server
 	useEffect(() => {

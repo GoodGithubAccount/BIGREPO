@@ -1,11 +1,5 @@
 import React, {useContext} from 'react';
 import {BasketContext} from './ShoppingHandler';
-import {type ItemData} from './Item';
-
-type BasketItem = {
-	itemData: ItemData;
-	amount: number;
-};
 
 export const GetItemBasket = () => {
 	const {basket, removeFromBasket} = useContext(BasketContext);
