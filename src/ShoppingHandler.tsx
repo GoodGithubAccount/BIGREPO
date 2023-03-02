@@ -1,50 +1,51 @@
-import React, { createContext, useState } from 'react'
-import ItemCreate, { itemData } from './Item'
-import { GetItemBasket } from './BasketView'
-import ItemView from './ItemView'
+import React, {createContext, useState} from 'react';
+import ItemCreate, {type ItemData} from './Item';
+import {GetItemBasket} from './BasketView';
+import ItemView from './ItemView';
 
-interface basketItem {
-  itemData: itemData,
-  amount: number
-}
+type BasketItem = {
+	itemData: ItemData;
+	amount: number;
+};
 
 export const BasketContext = createContext({
-  basket: [] as basketItem[],
-  addToBasket: (item: itemData) => {},
-  removeFromBasket: (item: basketItem) => {}
-})
+	basket: [] as BasketItem[],
+	addToBasket(item: ItemData) {},
+	removeFromBasket(item: BasketItem) {},
+});
 
 const ShoppingHandler = () => {
-  const [basket, setBasket] = useState<basketItem[]>([])
+	const [basket, setBasket] = useState<BasketItem[]>([]);
 
-  const addToBasket = (item: itemData) => {
-    const itemExists = basket.some((element) => element.itemData.id === item.id)
+	const addToBasket = (item: ItemData) => {
+		const itemExists = basket.some(element => element.itemData.id === item.id);
 
-    if (itemExists) {
-      setBasket(basket.map((element) => {
-        if (element.itemData.id === item.id) {
-          return {
-            ...element,
-            amount: element.amount + 1
-          }
-        }
-        return element
-      }))
-    } else {
-      setBasket([...basket, { itemData: item, amount: 1 }])
-    }
-  }
+		if (itemExists) {
+			setBasket(basket.map(element => {
+				if (element.itemData.id === item.id) {
+					return {
+						...element,
+						amount: element.amount + 1,
+					};
+				}
 
-  const removeFromBasket = (item: basketItem) => {
-    setBasket(basket.filter((element) => element.itemData.id !== item.itemData.id))
-  }
+				return element;
+			}));
+		} else {
+			setBasket([...basket, {itemData: item, amount: 1}]);
+		}
+	};
 
-  return (
-    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket }}>
-      <ItemView />
-      <GetItemBasket />
-    </BasketContext.Provider>
-  )
-}
+	const removeFromBasket = (item: BasketItem) => {
+		setBasket(basket.filter(element => element.itemData.id !== item.itemData.id));
+	};
 
-export default ShoppingHandler
+	return (
+		<BasketContext.Provider value={{basket, addToBasket, removeFromBasket}}>
+			<ItemView />
+			<GetItemBasket />
+		</BasketContext.Provider>
+	);
+};
+
+export default ShoppingHandler;
