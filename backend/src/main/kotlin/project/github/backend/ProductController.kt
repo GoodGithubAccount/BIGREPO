@@ -52,18 +52,22 @@ class ProductController(private val repository: ProductRepository) {
      */
     @PutMapping("/products/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): Product {
-        return this.repository.findById(id).map { product: Product ->
-            product.setName(newProduct.getName())
-            product.setPrice(newProduct.getPrice())
-            product.setCurrency(newProduct.getCurrency())
-            product.setRebateQuantity(newProduct.getRebateQuantity())
-            product.setRebatePercent(newProduct.getRebatePercent())
-            product.setUpsellProduct(newProduct.getUpsellProduct())
-            this.repository.save(product)
-        }.orElseGet {
-            //newProduct.setId(id)?
-            this.repository.save(newProduct)
-        }
+        return this.repository.findById(id).map { existingProduct: Product ->
+            updateProductFrom(existingProduct, newProduct)
+            this.repository.save(existingProduct)
+        }.orElse(this.repository.save(newProduct))
+    }
+
+    /**
+     * Updates all [Product] fields from the [newProduct] to the [existingProduct]
+     */
+    private fun updateProductFrom(newProduct: Product, existingProduct: Product) {
+        existingProduct.setName(newProduct.getName())
+        existingProduct.setPrice(newProduct.getPrice())
+        existingProduct.setCurrency(newProduct.getCurrency())
+        existingProduct.setRebateQuantity(newProduct.getRebateQuantity())
+        existingProduct.setRebatePercent(newProduct.getRebatePercent())
+        existingProduct.setUpsellProduct(newProduct.getUpsellProduct())
     }
 
     /**
