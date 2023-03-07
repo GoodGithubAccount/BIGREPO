@@ -62,4 +62,30 @@ class Product(
     override fun toString(): String {
         return toStringBuilder()
     }
+
+    fun getName(): String = this.name
+    fun getPrice(): Int =this.price
+    fun getCurrency(): String = this.currency
+    fun getRebateQuantity(): Int = this.rebateQuantity
+    fun getRebatePercent(): Int = this.rebatePercent
+    fun getUpsellProduct(): String? = this.upsellProduct
+
+    fun setName(name: String) {
+        this.name = name
+    }
+    fun setPrice(price: Int) {
+        this.price = price
+    }
+    fun setCurrency(currency: String) {
+        this.currency = currency
+    }
+    fun setRebateQuantity(rebateQuantity: Int) {
+        this.rebateQuantity = rebateQuantity
+    }
+    fun setRebatePercent(rebatePercent: Int) {
+        this.rebatePercent = rebatePercent
+    }
+    fun setUpsellProduct(upsellProduct: String?) {
+        this.upsellProduct = upsellProduct
+    }
 }
