@@ -25,17 +25,10 @@ class Product(@Id val id: String, private var name: String, private var price: I
     }
 
     /**
-     * Generated hashcode
+     * Returns a hash code value for the [Product] based solely on the [id].
      */
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + price
-        result = 31 * result + currency.hashCode()
-        result = 31 * result + rebateQuantity
-        result = 31 * result + rebatePercent
-        result = 31 * result + (upsellProduct?.hashCode() ?: 0)
-        return result
+        return id.hashCode()
     }
 
     override fun toString(): String {
