@@ -4,9 +4,15 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
 @Entity
-class Product(@Id val id: String, private var name: String, private var price: Int, private var currency: String, private var rebateQuantity: Int, private var rebatePercent: Int, private var upsellProduct: String?) {
-
-    constructor() : this("default-id", "default-name", 0, "DKK", 0, 0, null)
+class Product(
+        @Id private val id: String,
+        private var name: String,
+        private var price: Int,
+        private var currency: String,
+        private var rebateQuantity: Int,
+        private var rebatePercent: Int,
+        private var upsellProduct: String?
+) {
 
     init {
         require(price >= 0) { "Price must be 0 or greater, was $price" }
