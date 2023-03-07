@@ -35,6 +35,11 @@ class ProductController(private val repository: ProductRepository) {
 
     //Single items
 
+    /**
+     * Returns a [Product] by its [id]
+     *
+     * @throws ProductNotFoundException if the [id] could not be found in the [ProductRepository]
+     */
     @GetMapping("/products/{id}")
     fun getProduct(@PathVariable id: String): Product {
         return this.repository.findById(id).orElseThrow { ProductNotFoundException(id) }
@@ -65,7 +70,6 @@ class ProductController(private val repository: ProductRepository) {
      * Deletes a [Product] with the given [id].
      *
      * If the [Product] is not found in the [ProductRepository] it is silently ignored.
-     *
      */
     @DeleteMapping("/products/{id}")
     fun deleteProduct(@PathVariable id: String) {
