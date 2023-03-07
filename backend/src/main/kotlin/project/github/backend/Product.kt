@@ -31,8 +31,29 @@ class Product(@Id val id: String, private var name: String, private var price: I
         return id.hashCode()
     }
 
+    /**
+     * Builds the toString() return value by each declared field in the class in the format:
+     *
+     *     Product { id='jeffy-bezzy', name='Jeffrey Bezos', price='3', ... }
+     *
+     * @return the built string.
+     */
+    private fun toStringBuilder(): String {
+        val className = Product::class.java.name
+        val declaredFields = Product::class.java.declaredFields
+        val sb = StringBuilder("$className { ")
+        val fieldStrings = declaredFields.map { field ->
+            "${field.name}='${field.get(this)}'"
+        }
+        sb.append(fieldStrings.joinToString(", "))
+        sb.append(" }")
+        return sb.toString()
+    }
+
+    /**
+     * Returns a string representation of [Product] with all declared fields and their values.
+     */
     override fun toString(): String {
-        return "Product { id='${this.id}', name='${this.name}', price='${this.price}', currency='${this.currency}', " +
-               "rebateQuantity='${this.rebateQuantity}', rebatePercent='${this.rebatePercent}', upsellProduct='${this.upsellProduct}' }"
+        return toStringBuilder()
     }
 }
