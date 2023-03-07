@@ -15,20 +15,13 @@ class Product(@Id val id: String, private var name: String, private var price: I
     }
 
     /**
-     * Returns true if the [Product]'s [id]s are equal
+     * Returns true if the [Product]'s [id]s are equal.
      */
     override fun equals(other: Any?): Boolean {
         if (other !is Product) {
             return false
         }
-
-        val product: Product = other
-
-        if (this.id != product.id) {
-            return false
-        }
-
-        return true
+        return this.id == other.id
     }
 
     /**
