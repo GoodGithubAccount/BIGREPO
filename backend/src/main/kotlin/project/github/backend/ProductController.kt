@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.DeleteMapping
 import java.util.stream.Collectors
 
+/**
+ * This class represents the [RestController] for handling HTTP requests related to [Product] entities.
+ * It defines several endpoints for managing CRUD operations of the [Product] entities.
+ * @param repository The [ProductRepository] instance used to interact with the data store.
+ * @param assembler The [ProductModelAssembler] instance used to convert [Product] entities to [EntityModel]s.
+ */
 @RestController
 class ProductController(private val repository: ProductRepository, private val assembler: ProductModelAssembler) {
 
@@ -89,7 +95,7 @@ class ProductController(private val repository: ProductRepository, private val a
     }
 
     /**
-     * Updates all [Product] fields from the [newProduct] to the [existingProduct]
+     * Updates all [Product] fields from the [newProduct] to the [existingProduct].
      */
     private fun updateProductFrom(newProduct: Product, existingProduct: Product) {
         existingProduct.setName(newProduct.getName())
@@ -101,7 +107,7 @@ class ProductController(private val repository: ProductRepository, private val a
     }
 
     /**
-     * Deletes a [Product] with the given [id].
+     * Endpoint for deleting a [Product] with the given [id].
      *
      * If the [Product] is not found in the [ProductRepository] it is silently ignored.
      */
