@@ -74,6 +74,7 @@ class Product(
         return toStringBuilder()
     }
 
+    fun getId(): String = this.id
     fun getName(): String = this.name
     fun getPrice(): Int =this.price
     fun getCurrency(): String = this.currency
