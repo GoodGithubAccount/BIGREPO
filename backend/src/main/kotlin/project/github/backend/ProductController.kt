@@ -1,5 +1,9 @@
 package project.github.backend
 
+import org.springframework.hateoas.CollectionModel
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.server.core.DummyInvocationUtils.methodOn
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -7,18 +11,27 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.DeleteMapping
+import java.util.stream.Collectors
 
 @RestController
-class ProductController(private val repository: ProductRepository) {
+class ProductController(private val repository: ProductRepository, private val assembler: ProductModelAssembler) {
 
     /**
-     * Returns all instances of [Product] in the [ProductRepository].
-     *
-     * @return all [Product] entities
+     * Endpoint for Retrieving all [Product]s from the [repository] and returns them as a collection of [EntityModel]s.
+     * @return A [CollectionModel] containing [EntityModel]s of all products in the [repository],
+     * along with a self-referencing link.
      */
     @GetMapping("/products")
-    fun all(): List<Product> {
-        return this.repository.findAll()
+    fun all(): CollectionModel<EntityModel<Product>> {
+        val productsStream = this.repository.findAll().stream()
+        val productsAsEntityModels = productsStream.map {
+            product ->
+            convertToEntityModel(product)
+        }.collect(Collectors.toList())
+
+        return CollectionModel.of(productsAsEntityModels,
+                linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
+        )
     }
 
     /**
@@ -35,23 +48,41 @@ class ProductController(private val repository: ProductRepository) {
     //Single items
 
     /**
-     * Returns a [Product] by its [id]
-     *
-     * @throws ProductNotFoundException if the [id] could not be found in the [ProductRepository]
+     * Endpoint for retrieving the details of a [Product] with the specified ID.
+     * @param id The ID of the [Product] to retrieve.
+     * @return An [EntityModel] containing the details of the retrieved product.
+     * @throws ProductNotFoundException If no product with the specified [id] is found in the [ProductRepository].
      */
     @GetMapping("/products/{id}")
-    fun getProduct(@PathVariable id: String): Product {
-        return this.repository.findById(id).orElseThrow { ProductNotFoundException(id) }
+    fun getProduct(@PathVariable id: String): EntityModel<Product> {
+        val product = findProductById(id).orElseThrow { ProductNotFoundException(id) }
+        return convertToEntityModel(product)
     }
 
     /**
-     * Replaces an existing [Product] by its [id] with [newProduct].
+     * Finds a [Product] in the [repository] by its ID.
+     * @param id The ID of the product to find.
+     * @return The product with the specified ID if it exists, Optional#empty() otherwise.
+     */
+    private fun findProductById(id: String) = this.repository.findById(id)
+
+    /**
+     * Converts the non-model object [product] to the equivalent
+     * model-based object [EntityModel] using the class [assembler].
+     * @param product The product object to convert.
+     * @return An [EntityModel] containing the details of the converted product.
+     */
+    private fun convertToEntityModel(product: Product) =
+            this.assembler.toModel(product)
+
+    /**
+     * Endpoint for updating an existing [Product] by its [id] with [newProduct].
      *
      * If the [Product] is not found the [newProduct] is saved in the [ProductRepository].
      */
     @PutMapping("/products/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): Product {
-        return this.repository.findById(id).map { existingProduct: Product ->
+        return findProductById(id).map { existingProduct: Product ->
             updateProductFrom(existingProduct, newProduct)
             this.repository.save(existingProduct)
         }.orElse(this.repository.save(newProduct))
