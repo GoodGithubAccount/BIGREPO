@@ -3,6 +3,17 @@ package project.github.backend
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
+/**
+ * This class represents a product as an [Entity].
+ * @property id the unique identifier of the product.
+ * @property name The name of the product.
+ * @property price The price of the product.
+ * @property currency The currency in which the price is specified.
+ * @property rebateQuantity The quantity required to qualify for a rebate.
+ * @property rebatePercent The percentage discount offered as a rebate.
+ * @property upsellProduct The ID of the product that is offered as an upsell.
+ * @throws IllegalArgumentException If the price, [rebateQuantity] or [rebatePercent] is not valid.
+ */
 @Entity
 class Product(
         @Id private val id: String,
@@ -42,7 +53,7 @@ class Product(
      *
      *     Product { id='jeffy-bezzy', name='Jeffrey Bezos', price='3', ... }
      *
-     * @return the built string.
+     * @return The built string.
      */
     private fun toStringBuilder(): String {
         val className = Product::class.java.name

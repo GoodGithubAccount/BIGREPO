@@ -22,10 +22,9 @@ class ProductController(private val repository: ProductRepository) {
     }
 
     /**
-     * Saves a given [Product] instance to the [ProductRepository].
-     *
-     * @param newProduct the [Product] entity to be saved
-     * @return the saved [Product]
+     * Endpoint for saving a given [Product] instance to the [ProductRepository].
+     * @param newProduct The [Product] entity to be saved.
+     * @return The saved [Product].
      */
     @PostMapping("/products")
     fun newProduct(@RequestBody newProduct: Product): Product {
