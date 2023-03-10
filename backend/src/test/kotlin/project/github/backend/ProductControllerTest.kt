@@ -49,4 +49,27 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate) {
         val getResponse = client.getForObject<Product>("/products/$productId")
         assertThat(getResponse).isEqualTo(product)
     }
+
+    @DirtiesContext
+    @Test
+    fun `getting a product that was saved and removed returns 404`() {
+        val productId = "unique-id"
+        val product = Product(
+                id = productId,
+                name = "",
+                price = 0,
+                currency = "",
+                rebateQuantity = 0,
+                rebatePercent = 0,
+                upsellProduct = "null"
+        )
+
+        client.postForObject<Product>("/products", product)
+
+        client.delete("/products/$productId")
+
+        val getResponse = client.getForEntity<String>("/products/$productId")
+
+        assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
 }
