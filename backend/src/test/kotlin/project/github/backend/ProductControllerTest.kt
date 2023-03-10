@@ -17,13 +17,13 @@ import org.springframework.test.annotation.DirtiesContext
 class ProductControllerTest(@Autowired val client: TestRestTemplate) {
 
     @Test
-    fun `retrieving all products returns 200`() {
+    fun `getting all products returns 200`() {
         val entity = client.getForEntity<String>("/products")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
-    fun `retrieving a non-existent product returns 404`() {
+    fun `getting a non-existent product returns 404`() {
         val id = "unique-id"
         val entity = client.getForEntity<String>("/products/$id")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -31,7 +31,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate) {
 
     @DirtiesContext
     @Test
-    fun `saving a product returns the product and saves it`() {
+    fun `posting a product returns the product and saves it`() {
         val productId = "unique-id"
         val product = Product(
                 id = productId,
