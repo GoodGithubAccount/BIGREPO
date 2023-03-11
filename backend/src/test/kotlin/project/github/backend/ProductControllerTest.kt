@@ -26,7 +26,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @Test
     fun `getting all products returns 200`() {
-        val entity = getEntityProduct("/products")
+        val entity = getForEntityAllProducts()
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -153,4 +153,5 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     private fun getEntityProduct(productId: String) = client.getForEntity<String>("/products/$productId")
     private fun deleteProduct(productId: String) = client.delete("/products/$productId")
     private fun postProduct(product: Product) = client.postForObject<Product>("/products", product)
+    private fun getForEntityAllProducts() = client.getForEntity<String>("/products")
 }
