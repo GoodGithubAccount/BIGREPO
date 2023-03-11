@@ -95,8 +95,8 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
         val postResponse = postProduct(product)
 
         assertThat(postResponse).isEqualTo(product)
-        val getResponse = getObjectProduct("/products/$productId")
-        assertThat(getResponse).isEqualTo(product)
+        val productInRepository = repository.findById(productId).get()
+        assertThat(productInRepository).isEqualTo(product)
     }
 
     @DirtiesContext
