@@ -60,6 +60,33 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @DirtiesContext
     @Test
+    fun `products with same ID are equal`() {
+        val productId = Random.nextInt().toString()
+        val product = Product(
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        val newProduct = Product(
+            id = productId,
+            name = "Jeffrey Bezos",
+            price = 3,
+            currency = "USD",
+            rebateQuantity = 5,
+            rebatePercent = 10,
+            upsellProduct = "another-id"
+        )
+
+        assertThat(product).isEqualTo(newProduct)
+    }
+
+    @DirtiesContext
+    @Test
     fun `getting a product that was saved and removed will return 404`() {
         val productId = Random.nextInt().toString()
         val product = Product(
