@@ -16,7 +16,7 @@ import jakarta.persistence.Id
  */
 @Entity
 class Product(
-        @Id private val id: String,
+        @Id private var id: String,
         private var name: String,
         private var price: Int,
         private var currency: String,
@@ -82,6 +82,9 @@ class Product(
     fun getRebatePercent(): Int = this.rebatePercent
     fun getUpsellProduct(): String? = this.upsellProduct
 
+    fun setId(id: String) {
+        this.id = id
+    }
     fun setName(name: String) {
         this.name = name
     }
