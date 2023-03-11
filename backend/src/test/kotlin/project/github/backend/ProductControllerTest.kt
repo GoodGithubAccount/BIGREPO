@@ -31,7 +31,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     }
 
     @Test
-    fun `getting a non-existent product returns 404`() {
+    fun `getting a non-existent product by ID returns 404`() {
         val id = Random.nextInt().toString()
         val entity = getEntityProduct(id)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
