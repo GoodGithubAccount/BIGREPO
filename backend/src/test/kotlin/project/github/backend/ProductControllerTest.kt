@@ -11,10 +11,10 @@ import org.springframework.test.annotation.DirtiesContext
 import kotlin.random.Random
 
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = [
-            "spring.datasource.url=jdbc:h2:mem:testdb"
-        ]
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    properties = [
+        "spring.datasource.url=jdbc:h2:mem:testdb"
+    ]
 )
 class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired val repository: ProductRepository) {
 
@@ -83,13 +83,13 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     fun `posting a product returns the product and saves it`() {
         val productId = Random.nextInt().toString()
         val product = Product(
-                id = productId,
-                name = "",
-                price = 0,
-                currency = "",
-                rebateQuantity = 0,
-                rebatePercent = 0,
-                upsellProduct = "null"
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = "null"
         )
 
         val postResponse = postProduct(product)
@@ -131,13 +131,13 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     fun `getting a product that was saved and removed will return 404`() {
         val productId = Random.nextInt().toString()
         val product = Product(
-                id = productId,
-                name = "",
-                price = 0,
-                currency = "",
-                rebateQuantity = 0,
-                rebatePercent = 0,
-                upsellProduct = "null"
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = "null"
         )
 
         postProduct(product)

@@ -6,13 +6,7 @@ import org.springframework.hateoas.IanaLinkRelations
 import org.springframework.hateoas.server.core.DummyInvocationUtils.methodOn
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.*
 import java.util.stream.Collectors
 
 /**
@@ -32,13 +26,13 @@ class ProductController(private val repository: ProductRepository, private val a
     @GetMapping("/products")
     fun all(): CollectionModel<EntityModel<Product>> {
         val productsStream = this.repository.findAll().stream()
-        val productsAsEntityModels = productsStream.map {
-            product ->
+        val productsAsEntityModels = productsStream.map { product ->
             convertToEntityModel(product)
         }.collect(Collectors.toList())
 
-        return CollectionModel.of(productsAsEntityModels,
-                linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
+        return CollectionModel.of(
+            productsAsEntityModels,
+            linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
         )
     }
 
@@ -47,7 +41,7 @@ class ProductController(private val repository: ProductRepository, private val a
      * @param newProduct The [Product] entity to be saved.
      * @return A [ResponseEntity] object with the saved [Product] in the response body
      * and a self-referencing link in the response header.
-     * The response status code is 201 (Created)
+     * The response status code is 201 (Created).
      */
     @PostMapping("/products")
     fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
@@ -86,7 +80,7 @@ class ProductController(private val repository: ProductRepository, private val a
      * @return An [EntityModel] containing the details of the converted product.
      */
     private fun convertToEntityModel(product: Product) =
-            this.assembler.toModel(product)
+        this.assembler.toModel(product)
 
     /**
      * Endpoint for updating an existing [Product] by its [id] with [newProduct].
