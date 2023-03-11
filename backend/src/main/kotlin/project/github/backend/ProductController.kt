@@ -2,8 +2,10 @@ package project.github.backend
 
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.IanaLinkRelations
 import org.springframework.hateoas.server.core.DummyInvocationUtils.methodOn
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -43,11 +45,16 @@ class ProductController(private val repository: ProductRepository, private val a
     /**
      * Endpoint for saving a given [Product] instance to the [ProductRepository].
      * @param newProduct The [Product] entity to be saved.
-     * @return The saved [Product].
+     * @return A [ResponseEntity] object with the saved [Product] in the response body
+     * and a self-referencing link in the response header.
+     * The response status code is 201 (Created)
      */
     @PostMapping("/products")
-    fun newProduct(@RequestBody newProduct: Product): Product {
-        return this.repository.save(newProduct)
+    fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
+        val entityModel: EntityModel<Product> = assembler.toModel(repository.save(newProduct))
+        return ResponseEntity
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+            .body<EntityModel<Product>>(entityModel)
     }
 
 
