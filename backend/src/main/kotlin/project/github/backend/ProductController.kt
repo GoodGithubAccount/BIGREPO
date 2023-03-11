@@ -92,6 +92,9 @@ class ProductController(private val repository: ProductRepository, private val a
      * Endpoint for updating an existing [Product] by its [id] with [newProduct].
      *
      * If the [Product] is not found the [newProduct] is saved in the [ProductRepository].
+     * @param newProduct The new product to update the existing product's variables.
+     * @param id The ID of the product to update.
+     * @return An HTTP 201 Created with the updated product as an EntityModel in the body.
      */
     @PutMapping("/products/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
