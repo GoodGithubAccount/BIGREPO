@@ -39,6 +39,47 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @DirtiesContext
     @Test
+    fun `upsellProduct can be string`() {
+        val stringUpsellId = Random.nextInt().toString()
+        val upsellString = Random.nextInt().toString()
+        val stringUpsellProduct = Product(
+            id = stringUpsellId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = upsellString
+        )
+
+        postProduct(stringUpsellProduct)
+
+        val product = repository.findById(stringUpsellId).get()
+        assertThat(product.getUpsellProduct()).isEqualTo(upsellString)
+    }
+
+    @DirtiesContext
+    @Test
+    fun `upsellProduct can be null`() {
+        val nullUpsellId = Random.nextInt().toString()
+        val nullUpsellProduct = Product(
+            id = nullUpsellId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        postProduct(nullUpsellProduct)
+
+        val product = repository.findById(nullUpsellId).get()
+        assertThat(product.getUpsellProduct()).isNull()
+    }
+
+    @DirtiesContext
+    @Test
     fun `posting a product returns the product and saves it`() {
         val productId = Random.nextInt().toString()
         val product = Product(
