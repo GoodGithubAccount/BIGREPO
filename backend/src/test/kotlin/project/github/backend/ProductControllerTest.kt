@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.*
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
+import kotlin.random.Random
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -31,7 +32,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @Test
     fun `getting a non-existent product returns 404`() {
-        val id = "unique-id"
+        val id = Random.nextInt().toString()
         val entity = getEntityProduct(id)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
@@ -39,7 +40,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     @DirtiesContext
     @Test
     fun `posting a product returns the product and saves it`() {
-        val productId = "unique-id"
+        val productId = Random.nextInt().toString()
         val product = Product(
                 id = productId,
                 name = "",
@@ -59,8 +60,8 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @DirtiesContext
     @Test
-    fun `getting a product that was saved and removed returns 404`() {
-        val productId = "unique-id"
+    fun `getting a product that was saved and removed will return 404`() {
+        val productId = Random.nextInt().toString()
         val product = Product(
                 id = productId,
                 name = "",
