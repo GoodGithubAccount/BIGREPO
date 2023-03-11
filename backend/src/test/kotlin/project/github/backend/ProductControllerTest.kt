@@ -149,7 +149,6 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
         assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
-    private fun getObjectProduct(productId: String) = client.getForObject<Product>("/products/$productId")
     private fun getEntityProduct(productId: String) = client.getForEntity<String>("/products/$productId")
     private fun deleteProduct(productId: String) = client.delete("/products/$productId")
     private fun postProduct(product: Product) = client.postForObject<Product>("/products", product)
