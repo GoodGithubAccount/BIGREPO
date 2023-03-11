@@ -25,14 +25,14 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @Test
     fun `getting all products returns 200`() {
-        val entity = client.getForEntity<String>("/products")
+        val entity = getEntityProduct("/products")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
     fun `getting a non-existent product returns 404`() {
         val id = "unique-id"
-        val entity = client.getForEntity<String>("/products/$id")
+        val entity = getEntityProduct(id)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
@@ -50,10 +50,10 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
                 upsellProduct = "null"
         )
 
-        val postResponse = client.postForObject<Product>("/products", product)
+        val postResponse = postProduct(product)
 
         assertThat(postResponse).isEqualTo(product)
-        val getResponse = client.getForObject<Product>("/products/$productId")
+        val getResponse = getObjectProduct("/products/$productId")
         assertThat(getResponse).isEqualTo(product)
     }
 
@@ -71,12 +71,17 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
                 upsellProduct = "null"
         )
 
-        client.postForObject<Product>("/products", product)
+        postProduct(product)
 
-        client.delete("/products/$productId")
+        deleteProduct(productId)
 
-        val getResponse = client.getForEntity<String>("/products/$productId")
+        val getResponse = getEntityProduct(productId)
 
         assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
+
+    private fun getObjectProduct(productId: String) = client.getForObject<Product>("/products/$productId")
+    private fun getEntityProduct(productId: String) = client.getForEntity<String>("/products/$productId")
+    private fun deleteProduct(productId: String) = client.delete("/products/$productId")
+    private fun postProduct(product: Product) = client.postForObject<Product>("/products", product)
 }
