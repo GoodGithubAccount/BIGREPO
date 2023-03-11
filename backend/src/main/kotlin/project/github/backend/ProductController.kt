@@ -124,11 +124,12 @@ class ProductController(private val repository: ProductRepository, private val a
 
     /**
      * Endpoint for deleting a [Product] with the given [id].
-     *
-     * If the [Product] is not found in the [ProductRepository] it is silently ignored.
+     * @param id The id of the product
+     * @return An HTTP 204 No Content response
      */
     @DeleteMapping("/products/{id}")
-    fun deleteProduct(@PathVariable id: String) {
+    fun deleteProduct(@PathVariable id: String): ResponseEntity<*> {
         this.repository.deleteById(id)
+        return ResponseEntity.noContent().build<Any>()
     }
 }
