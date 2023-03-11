@@ -95,9 +95,9 @@ class ProductController(private val repository: ProductRepository, private val a
     }
 
     /**
-     * Updates all [Product] fields from the [newProduct] to the [existingProduct].
+     * Updates all [Product] fields from the [existingProduct] to the [newProduct].
      */
-    private fun updateProductFrom(newProduct: Product, existingProduct: Product) {
+    private fun updateProductFrom(existingProduct: Product, newProduct: Product) {
         existingProduct.setName(newProduct.getName())
         existingProduct.setPrice(newProduct.getPrice())
         existingProduct.setCurrency(newProduct.getCurrency())
