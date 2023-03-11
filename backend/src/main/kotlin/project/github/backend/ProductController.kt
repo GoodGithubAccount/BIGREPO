@@ -94,11 +94,20 @@ class ProductController(private val repository: ProductRepository, private val a
      * If the [Product] is not found the [newProduct] is saved in the [ProductRepository].
      */
     @PutMapping("/products/{id}")
-    fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): Product {
-        return findProductById(id).map { existingProduct: Product ->
-            updateProductFrom(existingProduct, newProduct)
-            this.repository.save(existingProduct)
-        }.orElse(this.repository.save(newProduct))
+    fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
+        val updatedProduct = findProductById(id)
+            .map {
+                updateProductFrom(it, newProduct)
+                repository.save(it)
+            }.orElseGet {
+                newProduct.setId(id)
+                repository.save(newProduct)
+            }
+
+        val entityModel = assembler.toModel(updatedProduct)
+        return ResponseEntity
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+            .body(entityModel)
     }
 
     /**
