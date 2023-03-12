@@ -26,6 +26,42 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     }
 
     @Test
+    fun `putting a product with a different ID will set new ID`() {
+        val productId = "unique-id"
+        val product = Product(
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        repository.save(product)
+
+        val randomId = Random.nextInt().toString()
+        val newName = "new product"
+
+        val productWithDifferentID = Product(
+            id = randomId,
+            name = newName,
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        putProductForEntity(productWithDifferentID, productId)
+
+        val savedProduct = repository.findById(productId).get()
+
+        assertThat(savedProduct.getName()).isEqualTo(newName)
+        assertThat(savedProduct.getId()).isNotEqualTo(randomId)
+    }
+
+    @Test
     fun `putting a product returns 201`() {
         val productId = Random.nextInt().toString()
         val product = Product(
