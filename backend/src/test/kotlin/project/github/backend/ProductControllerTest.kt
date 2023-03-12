@@ -185,7 +185,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @DirtiesContext
     @Test
-    fun `getting a product that was saved and removed will return 404`() {
+    fun `getting a product by id that was removed will return 404`() {
         val productId = Random.nextInt().toString()
         val product = Product(
             id = productId,
@@ -196,8 +196,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             rebatePercent = 0,
             upsellProduct = "null"
         )
-
-        postProductForObject(product)
+        repository.save(product)
 
         deleteProduct(productId)
 
