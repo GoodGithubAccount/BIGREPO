@@ -26,6 +26,24 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     }
 
     @Test
+    fun `posting a product returns 201`() {
+        val productId = Random.nextInt().toString()
+        val product = Product(
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        val response = postProductForEntity(product)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    }
+
+    @Test
     fun `getting all products returns 200`() {
         val entity = getEntityForAllProducts()
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
