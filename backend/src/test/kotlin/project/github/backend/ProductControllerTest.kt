@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.*
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.annotation.DirtiesContext
 import kotlin.random.Random
@@ -35,6 +36,33 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
         val id = Random.nextInt().toString()
         val entity = getEntityProduct(id)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+
+    @DirtiesContext
+    @Test
+    fun `deleting a product returns 204`() {
+        val productId = Random.nextInt().toString()
+        val product = Product(
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        repository.save(product)
+
+        val response = client.exchange(
+            "/products/{id}",
+            HttpMethod.DELETE,
+            null,
+            Void::class.java,
+            productId
+        )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+        assertThat(repository.findById(productId)).isEmpty
     }
 
     @DirtiesContext
