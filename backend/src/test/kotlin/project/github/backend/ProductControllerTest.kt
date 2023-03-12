@@ -15,9 +15,7 @@ import kotlin.random.Random
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = [
-        "spring.datasource.url=jdbc:h2:mem:testdb"
-    ]
+    properties = ["spring.datasource.url=jdbc:h2:mem:testdb"]
 )
 class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired val repository: ProductRepository) {
 
@@ -172,7 +170,6 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             rebatePercent = 0,
             upsellProduct = null
         )
-
         val newProduct = Product(
             id = productId,
             name = "Jeffrey Bezos",
@@ -205,30 +202,19 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
         deleteProduct(productId)
 
         val getResponse = getEntityForProduct(productId)
-
         assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
     private fun getEntityForProduct(productId: String) = client.getForEntity<String>("/products/$productId")
     private fun deleteProduct(productId: String) = client.delete("/products/$productId")
-    private fun deleteProductForEntity(productId: String): ResponseEntity<Product> =
-        client.exchange(
-            "/products/{id}",
-            HttpMethod.DELETE,
-            null,
-            Product::class.java,
-            productId
-        )
+    private fun deleteProductForEntity(productId: String): ResponseEntity<Product> = client.exchange(
+        "/products/{id}", HttpMethod.DELETE, null, Product::class.java, productId
+    )
 
     private fun postProductForObject(product: Product) = client.postForObject<Product>("/products", product)
     private fun postProductForEntity(product: Product) = client.postForEntity<Product>("/products", product)
     private fun getEntityForAllProducts() = client.getForEntity<String>("/products")
-    private fun putProductForEntity(product: Product, productId: String) =
-        client.exchange(
-            "/products/{id}",
-            HttpMethod.PUT,
-            HttpEntity(product),
-            Product::class.java,
-            productId
-        )
+    private fun putProductForEntity(product: Product, productId: String) = client.exchange(
+        "/products/{id}", HttpMethod.PUT, HttpEntity(product), Product::class.java, productId
+    )
 }
