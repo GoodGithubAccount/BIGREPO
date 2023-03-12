@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.*
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import kotlin.random.Random
 
@@ -69,16 +70,10 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             rebatePercent = 0,
             upsellProduct = null
         )
-
         repository.save(product)
 
-        val response = client.exchange(
-            "/products/{id}",
-            HttpMethod.DELETE,
-            null,
-            Void::class.java,
-            productId
-        )
+        val response = deleteProductForEntity(productId)
+
         assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
         assertThat(repository.findById(productId)).isEmpty
     }
@@ -197,6 +192,15 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     private fun getEntityForProduct(productId: String) = client.getForEntity<String>("/products/$productId")
     private fun deleteProduct(productId: String) = client.delete("/products/$productId")
+    private fun deleteProductForEntity(productId: String): ResponseEntity<Product> =
+        client.exchange(
+            "/products/{id}",
+            HttpMethod.DELETE,
+            null,
+            Product::class.java,
+            productId
+        )
+
     private fun postProductForObject(product: Product) = client.postForObject<Product>("/products", product)
     private fun postProductForEntity(product: Product) = client.postForEntity<Product>("/products", product)
     private fun getEntityForAllProducts() = client.getForEntity<String>("/products")
