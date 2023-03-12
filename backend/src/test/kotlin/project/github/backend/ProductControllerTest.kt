@@ -27,14 +27,14 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
 
     @Test
     fun `getting all products returns 200`() {
-        val entity = getForEntityAllProducts()
+        val entity = getEntityForAllProducts()
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
     fun `getting a non-existent product by ID returns 404`() {
         val id = Random.nextInt().toString()
-        val entity = getEntityProduct(id)
+        val entity = getEntityForProduct(id)
         assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
@@ -80,7 +80,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             upsellProduct = upsellString
         )
 
-        postProduct(stringUpsellProduct)
+        postProductForObject(stringUpsellProduct)
 
         val product = repository.findById(stringUpsellId).get()
         assertThat(product.getUpsellProduct()).isEqualTo(upsellString)
@@ -100,7 +100,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             upsellProduct = null
         )
 
-        postProduct(nullUpsellProduct)
+        postProductForObject(nullUpsellProduct)
 
         val product = repository.findById(nullUpsellId).get()
         assertThat(product.getUpsellProduct()).isNull()
@@ -120,7 +120,7 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             upsellProduct = "null"
         )
 
-        val postResponse = postProduct(product)
+        val postResponse = postProductForObject(product)
 
         assertThat(postResponse).isEqualTo(product)
         val productInRepository = repository.findById(productId).get()
@@ -168,17 +168,18 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
             upsellProduct = "null"
         )
 
-        postProduct(product)
+        postProductForObject(product)
 
         deleteProduct(productId)
 
-        val getResponse = getEntityProduct(productId)
+        val getResponse = getEntityForProduct(productId)
 
         assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
-    private fun getEntityProduct(productId: String) = client.getForEntity<String>("/products/$productId")
+    private fun getEntityForProduct(productId: String) = client.getForEntity<String>("/products/$productId")
     private fun deleteProduct(productId: String) = client.delete("/products/$productId")
-    private fun postProduct(product: Product) = client.postForObject<Product>("/products", product)
-    private fun getForEntityAllProducts() = client.getForEntity<String>("/products")
+    private fun postProductForObject(product: Product) = client.postForObject<Product>("/products", product)
+    private fun postProductForEntity(product: Product) = client.postForEntity<Product>("/products", product)
+    private fun getEntityForAllProducts() = client.getForEntity<String>("/products")
 }
