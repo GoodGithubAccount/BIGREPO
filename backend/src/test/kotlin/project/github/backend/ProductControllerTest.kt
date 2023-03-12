@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.*
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,6 +25,24 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     fun setup() {
         repository.deleteAll()
         assertThat(repository.findAll()).isEmpty()
+    }
+
+    @Test
+    fun `putting a product returns 201`() {
+        val productId = Random.nextInt().toString()
+        val product = Product(
+            id = productId,
+            name = "",
+            price = 0,
+            currency = "",
+            rebateQuantity = 0,
+            rebatePercent = 0,
+            upsellProduct = null
+        )
+
+        val response = putProductForEntity(product, productId)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     }
 
     @Test
@@ -204,4 +223,12 @@ class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired 
     private fun postProductForObject(product: Product) = client.postForObject<Product>("/products", product)
     private fun postProductForEntity(product: Product) = client.postForEntity<Product>("/products", product)
     private fun getEntityForAllProducts() = client.getForEntity<String>("/products")
+    private fun putProductForEntity(product: Product, productId: String) =
+        client.exchange(
+            "/products/{id}",
+            HttpMethod.PUT,
+            HttpEntity(product),
+            Product::class.java,
+            productId
+        )
 }
