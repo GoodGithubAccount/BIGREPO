@@ -11,7 +11,13 @@ export const GetItemBasket = () => {
 			basket.reduce((acc, item) => acc + (item.itemData.price * item.amount), 0),
 		);
 	}, [basket]);
-
+	function calculateTotalPrice(): number {
+		let price = totalPrice;
+		if (price > 300) {
+			price *= 0.9;
+		}
+		return price;
+	}
 	return (
 		<div>
 			<h1>Basket</h1>
@@ -23,7 +29,7 @@ export const GetItemBasket = () => {
 					}}>Remove</button>
 				</div>
 			))}
-			<div>Total : {totalPrice} DKK</div>
+			<div>Total: {calculateTotalPrice()} DKK</div>
 		</div>
 	);
 };
