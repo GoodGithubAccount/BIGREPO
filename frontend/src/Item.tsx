@@ -6,6 +6,8 @@ export type ItemData = {
 	name: string;
 	id: number;
 	price: number;
+	rebateQuantity: number;
+	rebatePercent: number;
 };
 
 const ItemCreate = (props: ItemData) => {
@@ -14,11 +16,14 @@ const ItemCreate = (props: ItemData) => {
 	return (
 		<div className='item'>
 			<h3>{props.name}</h3>
-			<p className='price'>Price: {props.price}</p>
+
+			<p className='price'>Price: {props.price}
+				<br/> Buy: {props.rebateQuantity} get {props.rebatePercent}% off! </p>
+
 			<button className='itemButton' onClick={() => {
 				addToBasket(props);
 			}}>
-        ADD ITEM
+				ADD ITEM
 			</button>
 		</div>
 	);
