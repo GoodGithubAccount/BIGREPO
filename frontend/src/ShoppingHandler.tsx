@@ -6,6 +6,7 @@ import ItemView from './ItemView';
 type BasketItem = {
 	itemData: ItemData;
 	amount: number;
+	discountMessage?: string; // make discountMessage an optional property
 };
 
 export const BasketContext = createContext({
