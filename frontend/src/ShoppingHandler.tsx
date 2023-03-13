@@ -46,9 +46,19 @@ const ShoppingHandler = () => {
 	};
 
 	return (
-		<BasketContext.Provider value={{basket, addToBasket, removeFromBasket}}>
-			<ItemView />
-			<GetItemBasket />
+		<BasketContext.Provider value={{basket, addToBasket, removeFromBasket, basketAdder, basketSubber}}>
+			<div className='grid-container'>
+
+				<div className='items'>
+					<ItemView/>
+				</div>
+
+				<div className='basket'>
+					<GetItemBasket/>
+				</div>
+
+			</div>
+
 		</BasketContext.Provider>
 	);
 };
