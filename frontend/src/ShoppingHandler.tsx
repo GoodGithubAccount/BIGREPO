@@ -17,6 +17,12 @@ export const BasketContext = createContext({
 	removeFromBasket(item: BasketItem) {
 		// Dong
 	},
+	basketAdder(item: BasketItem) {
+		// Deng
+	},
+	basketSubber(item: BasketItem) {
+		// Dang
+	},
 });
 
 const ShoppingHandler = () => {
@@ -43,6 +49,16 @@ const ShoppingHandler = () => {
 
 	const removeFromBasket = (item: BasketItem) => {
 		setBasket(basket.filter(element => element.itemData.id !== item.itemData.id));
+	};
+
+	const basketAdder = (item: BasketItem) => {
+		setBasket(basket.filter(element => element.itemData.id, item.amount += 1));
+	};
+
+	const basketSubber = (item: BasketItem) => {
+		if (item.amount >= 1) {
+			setBasket(basket.filter(element => element.itemData.id, item.amount -= 1));
+		}
 	};
 
 	return (

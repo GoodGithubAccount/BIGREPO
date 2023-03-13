@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {BasketContext} from './ShoppingHandler';
 
 export const GetItemBasket = () => {
-	const {basket, removeFromBasket} = useContext(BasketContext);
+	const {basket, removeFromBasket, basketAdder, basketSubber} = useContext(BasketContext);
 
 	const [totalPrice, setTotal] = React.useState(0);
 
@@ -44,7 +44,15 @@ export const GetItemBasket = () => {
 			{basket.map(item => (
 				<div key={item.itemData.id}>
 					{item.itemData.name} x {item.amount} : {item.itemData.price * item.amount} DKK
-					{item.discountMessage && <span> - {item.discountMessage}</span>}
+
+					<button onClick={() => {
+						basketAdder(item);
+					}}>+</button>
+
+					<button onClick={() => {
+						basketSubber(item);
+					}}>-</button>
+
 					<button onClick={() => {
 						removeFromBasket(item);
 					}}>Remove</button>
