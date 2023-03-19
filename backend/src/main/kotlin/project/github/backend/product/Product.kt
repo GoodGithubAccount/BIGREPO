@@ -1,4 +1,4 @@
-package project.github.backend
+package project.github.backend.product
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id

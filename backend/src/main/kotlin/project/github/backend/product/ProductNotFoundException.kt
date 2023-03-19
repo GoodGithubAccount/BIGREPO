@@ -1,4 +1,4 @@
-package project.github.backend
+package project.github.backend.product
 
 /**
  * An exception thrown when a requested product cannot be found.

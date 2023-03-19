@@ -1,4 +1,4 @@
-package project.github.backend
+package project.github.backend.product
 
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
