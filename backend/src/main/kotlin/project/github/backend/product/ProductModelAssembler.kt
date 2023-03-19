@@ -17,7 +17,7 @@ class ProductModelAssembler : RepresentationModelAssembler<Product, EntityModel<
 
     /**
      * Converts the non-model object [product] to the equivalent model-based object
-     * [EntityModel] of the [product] including the self link and link to all products.
+     * [EntityModel] of the [product] including the self link, link to all products and if present an upsellProduct [Product].
      *
      * @param product the non-model object to be converted.
      * @return the converted model-based object.

@@ -76,7 +76,7 @@ class Product(
 
     fun getId(): String = this.id
     fun getName(): String = this.name
-    fun getPrice(): Int =this.price
+    fun getPrice(): Int = this.price
     fun getCurrency(): String = this.currency
     fun getRebateQuantity(): Int = this.rebateQuantity
     fun getRebatePercent(): Int = this.rebatePercent

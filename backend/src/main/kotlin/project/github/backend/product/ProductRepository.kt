@@ -7,4 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository
  * @property Product The entity type being managed by this repository.
  * @property String The entity's ID.
  */
-interface ProductRepository: JpaRepository<Product, String >
+interface ProductRepository : JpaRepository<Product, String>
