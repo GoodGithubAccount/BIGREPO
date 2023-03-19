@@ -23,9 +23,16 @@ class ProductModelAssembler : RepresentationModelAssembler<Product, EntityModel<
      * @return the converted model-based object.
      */
     override fun toModel(product: Product): EntityModel<Product> {
-        return EntityModel.of(product,
-                linkTo(methodOn(ProductController::class.java).getProduct(product.getId())).withSelfRel(),
-                linkTo(methodOn(ProductController::class.java).all()).withRel("products")
+        val model = EntityModel.of(
+            product,
+            linkTo(methodOn(ProductController::class.java).getProduct(product.getId())).withSelfRel(),
+            linkTo(methodOn(ProductController::class.java).all()).withRel("products")
         )
+
+        if (product.getUpsellProduct() != null) {
+            model.add(linkTo(methodOn(ProductController::class.java).getProduct(product.getUpsellProduct()!!)).withRel("upsellProduct"))
+        }
+
+        return model
     }
 }
