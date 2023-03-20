@@ -63,6 +63,7 @@ class Order(
 
     fun getId(): Long = this.id!!
     fun getStatus(): Status = this.status
+    fun getProducts(): List<Product> = this.products
 
     fun setStatus(status: Status) {
         this.status = status
