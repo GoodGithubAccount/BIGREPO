@@ -3,11 +3,13 @@ import {BasketContext} from './ShoppingHandler';
 import './Item.css';
 
 export type ItemData = {
-	name: string;
 	id: number;
+	name: string;
 	price: number;
+	currency: string;
 	rebateQuantity: number;
 	rebatePercent: number;
+	upsellProduct: string;
 };
 
 const ItemCreate = (props: ItemData) => {
