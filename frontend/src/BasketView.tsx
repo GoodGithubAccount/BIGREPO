@@ -29,6 +29,19 @@ export const GetItemBasket = () => {
 		const email = encodeURIComponent(formElements.email.value);
 	}
 
+	const checkForm = (emailInput, phoneInput) => {
+		// simulate form validation and submission
+		console.log('Email:', emailInput.value);
+		console.log('Phone:', phoneInput.value);
+		console.log('Terms and conditions accepted:', termsAccepted.checked);
+		console.log('Marketing emails accepted:', marketingAccepted.checked);
+		console.log('Optional order comment:', orderComment.value);
+	};
+
+	let termsAccepted = null;
+	let marketingAccepted = null;
+	let orderComment = null;
+
 	React.useEffect(() => {
 		setTotal(
 			basket.reduce((acc, item) => acc + (item.itemData.price * item.amount), 0),
@@ -81,6 +94,25 @@ export const GetItemBasket = () => {
 				<br />
 				<label htmlFor='email'>Email: </label>
 				<input id='email' name='email' />
+				<br />
+				<label>
+					<input type='checkbox' name='terms' />
+					Accept the terms and conditions <a href='https://www.shop.dtu.dk/en/terms-and-conditions-for-sales/'> (view here) </a>
+				</label>
+				<br />
+				<label>
+					<input type='checkbox' name='marketing' />
+					I would like to receive good offers
+				</label>
+				<br />
+				<label>
+					Optional order comment:
+					<textarea
+						ref={(input) => {
+							orderComment = input;
+						}}
+					></textarea>
+				</label>
 				<br />
 				<button onClick={() => {
 					const emailInput = document.getElementById('email') as HTMLInputElement;
