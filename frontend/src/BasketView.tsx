@@ -29,18 +29,7 @@ export const GetItemBasket = () => {
 		const email = encodeURIComponent(formElements.email.value);
 	}
 
-	const checkForm = (emailInput, phoneInput) => {
-		// simulate form validation and submission
-		console.log('Email:', emailInput.value);
-		console.log('Phone:', phoneInput.value);
-		console.log('Terms and conditions accepted:', termsAccepted.checked);
-		console.log('Marketing emails accepted:', marketingAccepted.checked);
-		console.log('Optional order comment:', orderComment.value);
-	};
 
-	let termsAccepted = null;
-	let marketingAccepted = null;
-	let orderComment = null;
 
 	React.useEffect(() => {
 		setTotal(
@@ -108,7 +97,7 @@ export const GetItemBasket = () => {
 				<label>
 					Optional order comment:
 					<textarea
-						ref={(input) => {
+						ref={input => {
 							orderComment = input;
 						}}
 					></textarea>
@@ -172,6 +161,8 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 	const isPhoneValid = /^\d{8}$/.test(phoneInput.value);
 	const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
 
+	console.log('Optional order comment:', orderComment.value);
+
 	if (isPhoneValid) {
 		phoneInput.setCustomValidity('');
 	} else {
@@ -184,3 +175,20 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 		emailInput.setCustomValidity('Please enter a valid email');
 	}
 }
+let orderComment = null;
+
+/*
+const checkForm = (emailInput, phoneInput) => {
+	// simulate form validation and submission
+	console.log('Email:', emailInput.value);
+	console.log('Phone:', phoneInput.value);
+	console.log('Terms and conditions accepted:', termsAccepted.checked);
+	console.log('Marketing emails accepted:', marketingAccepted.checked);
+	console.log('Optional order comment:', orderComment.value);
+};
+
+let termsAccepted = null;
+let marketingAccepted = null;
+let orderComment = null;
+
+ */
