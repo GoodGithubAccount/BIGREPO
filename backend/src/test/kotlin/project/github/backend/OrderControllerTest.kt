@@ -44,6 +44,54 @@ class OrderControllerTest(
 
     @DirtiesContext
     @Test
+    fun `cancelling an already cancelled order returns 405 method not allowed`() {
+        val order = Order(emptyList())
+        order.setStatus(Status.CANCELLED)
+        orderRepository.save(order)
+
+        val invalidCancelMethod = deleteCancelOrderForEntity(order)
+
+        assertThat(invalidCancelMethod.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+    }
+
+    @DirtiesContext
+    @Test
+    fun `cancelling an already completed order returns 405 method not allowed`() {
+        val order = Order(emptyList())
+        order.setStatus(Status.COMPLETED)
+        orderRepository.save(order)
+
+        val invalidCompleteMethod = deleteCancelOrderForEntity(order)
+
+        assertThat(invalidCompleteMethod.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+    }
+
+    @DirtiesContext
+    @Test
+    fun `completing an already cancelled order returns 405 method not allowed`() {
+        val order = Order(emptyList())
+        order.setStatus(Status.CANCELLED)
+        orderRepository.save(order)
+
+        val invalidCompleteMethod = putCompleteOrderForEntity(order)
+
+        assertThat(invalidCompleteMethod.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+    }
+
+    @DirtiesContext
+    @Test
+    fun `completing an already completed order returns 405 method not allowed`() {
+        val order = Order(emptyList())
+        order.setStatus(Status.COMPLETED)
+        orderRepository.save(order)
+
+        val invalidCompleteMethod = putCompleteOrderForEntity(order)
+
+        assertThat(invalidCompleteMethod.statusCode).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+    }
+
+    @DirtiesContext
+    @Test
     fun `cancelling an order sets status to cancelled`() {
         val order = Order(emptyList())
 
