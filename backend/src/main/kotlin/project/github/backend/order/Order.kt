@@ -2,6 +2,7 @@ package project.github.backend.order
 
 import jakarta.persistence.*
 import project.github.backend.product.Product
+import java.lang.IllegalStateException
 
 
 enum class Status {
@@ -62,7 +63,7 @@ class Order(
         return toStringBuilder()
     }
 
-    fun getId(): Long = this.id!!
+    fun getId(): Long = this.id?: throw IllegalStateException("ID has not been set yet")
     fun getStatus(): Status = this.status
     fun getProducts(): List<Product> = this.products
 
