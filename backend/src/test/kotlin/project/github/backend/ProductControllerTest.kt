@@ -1,7 +1,6 @@
 package project.github.backend
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,12 +19,6 @@ import kotlin.random.Random
     properties = ["spring.datasource.url=jdbc:h2:mem:testdb"]
 )
 class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired val repository: ProductRepository) {
-
-    @BeforeEach
-    fun setup() {
-        repository.deleteAll()
-        assertThat(repository.findAll()).isEmpty()
-    }
 
     @Test
     fun `putting a product with a different ID will set new ID`() {
