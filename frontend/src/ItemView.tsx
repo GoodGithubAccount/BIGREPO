@@ -20,6 +20,7 @@ const ItemView = () => {
 			<h1> ITEMS </h1>
 			{products.map(item => (
 				<ItemCreate
+					key={item.id}
 					id={item.id}
 					name={item.name}
 					price={item.price}
