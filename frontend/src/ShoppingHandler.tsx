@@ -1,16 +1,16 @@
 import React, {createContext, useState} from 'react';
-import ItemCreate, {type ItemData} from './Item';
+import ItemCreate, {type Product} from './Item';
 import {GetItemBasket} from './BasketView';
 import ItemView from './ItemView';
 
-type BasketItem = {
-	itemData: ItemData;
+export type BasketItem = {
+	products: Product;
 	amount: number;
 };
 
 export const BasketContext = createContext({
 	basket: [] as BasketItem[],
-	addToBasket(item: ItemData) {
+	addToBasket(item: Product) {
 		// Ding
 	},
 	removeFromBasket(item: BasketItem) {
@@ -27,12 +27,12 @@ export const BasketContext = createContext({
 const ShoppingHandler = () => {
 	const [basket, setBasket] = useState<BasketItem[]>([]);
 
-	const addToBasket = (item: ItemData) => {
-		const itemExists = basket.some(element => element.itemData.id === item.id);
+	const addToBasket = (item: Product) => {
+		const itemExists = basket.some(element => element.products.id === item.id);
 
 		if (itemExists) {
 			setBasket(basket.map(element => {
-				if (element.itemData.id === item.id) {
+				if (element.products.id === item.id) {
 					return {
 						...element,
 						amount: element.amount + 1,
@@ -42,21 +42,21 @@ const ShoppingHandler = () => {
 				return element;
 			}));
 		} else {
-			setBasket([...basket, {itemData: item, amount: 1}]);
+			setBasket([...basket, {products: item, amount: 1}]);
 		}
 	};
 
 	const removeFromBasket = (item: BasketItem) => {
-		setBasket(basket.filter(element => element.itemData.id !== item.itemData.id));
+		setBasket(basket.filter(element => element.products.id !== item.products.id));
 	};
 
 	const basketAdder = (item: BasketItem) => {
-		setBasket(basket.filter(element => element.itemData.id, item.amount += 1));
+		setBasket(basket.filter(element => element.products.id, item.amount += 1));
 	};
 
 	const basketSubber = (item: BasketItem) => {
 		if (item.amount >= 1) {
-			setBasket(basket.filter(element => element.itemData.id, item.amount -= 1));
+			setBasket(basket.filter(element => element.products.id, item.amount -= 1));
 		}
 	};
 

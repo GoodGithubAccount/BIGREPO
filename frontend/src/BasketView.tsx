@@ -1,5 +1,5 @@
 import React, {useContext, useState, type FormEvent} from 'react';
-import {BasketContext} from './ShoppingHandler';
+import {BasketContext, type BasketItem} from './ShoppingHandler';
 
 export const GetItemBasket = () => {
 	const {basket, removeFromBasket, basketAdder, basketSubber} = useContext(BasketContext);
@@ -10,7 +10,7 @@ export const GetItemBasket = () => {
 
 	React.useEffect(() => {
 		setTotal(
-			basket.reduce((acc, item) => acc + (item.itemData.price * item.amount), 0),
+			basket.reduce((acc, item) => acc + (item.products.price * item.amount), 0),
 		);
 		setRebate(
 			basket.reduce((acc, item) => acc + findTotal(item), 0),
@@ -21,8 +21,8 @@ export const GetItemBasket = () => {
 		<div>
 			<h1>Basket</h1>
 			{basket.map(item => (
-				<div key={item.itemData.id}>
-					{item.itemData.name} x {item.amount} : {item.itemData.price * item.amount} DKK
+				<div key={item.products.id}>
+					{item.products.name} x {item.amount} : {item.products.price * item.amount} DKK
 
 					<button onClick={() => {
 						basketAdder(item);
@@ -90,14 +90,43 @@ export const GetItemBasket = () => {
 	);
 };
 
+async function createNewOrder(basket: BasketItem[]) {
+	const url = 'http://localhost:8080/orders';
+
+	const basketItems = basket.flatMap(({products, amount}) => Array.from({length: amount}, () => ({
+		id: products.id,
+		name: products.name,
+		price: products.price,
+		currency: products.currency,
+		rebateQuantity: products.rebateQuantity,
+		rebatePercent: products.rebatePercent,
+		upsellProduct: products.upsellProduct,
+	})));
+
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+		},
+		body: JSON.stringify({
+			products: basketItems,
+		}),
+	});
+
+	if (!response.ok) {
+		throw new Error(`HTTP error! status: ${response.status}`);
+	}
+}
+
 // Function finds rebate if any and calculates new total with rebate
 function findTotal(item: any) {
 	let total;
 	// Calculate total price with rebate
-	if (item.amount >= item.itemData.rebateQuantity) {
-		total = item.itemData.price * item.amount * (1 - (item.itemData.rebatePercent / 100));
+	if (item.amount >= item.products.rebateQuantity) {
+		total = item.products.price * item.amount * (1 - (item.products.rebatePercent / 100));
 	} else {
-		total = item.itemData.price * item.amount;
+		total = item.products.price * item.amount;
 	}
 
 	return total;
