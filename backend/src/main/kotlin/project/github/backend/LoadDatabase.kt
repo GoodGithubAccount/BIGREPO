@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import project.github.backend.order.Order
 import project.github.backend.order.OrderRepository
-import project.github.backend.order.Status
 import project.github.backend.product.Product
 import project.github.backend.product.ProductRepository
 
@@ -30,8 +29,8 @@ class LoadDatabase {
         println("Preloading...")
         val p1 = Product("vitamin-d-90-100", "D-vitamin, 90ug, 100 stk", 116, "DKK", 3, 10, null)
         val p2 = Product("vitamin-c-500-250", "C-vitamin, 500mg, 250 stk", 150, "DKK", 2, 25, "vitamin-c-depot-500-250")
-        val o1 = Order( Status.IN_PROGRESS, listOf(p1,p2))
-        val o2 = Order(Status.IN_PROGRESS, listOf(p2))
+        val o1 = Order(listOf(p1,p2))
+        val o2 = Order(listOf(p2))
 
         log.info("Preloading " + productRepository.save(p1))
         log.info("Preloading " + productRepository.save(p2))

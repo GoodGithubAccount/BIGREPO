@@ -17,9 +17,10 @@ enum class Status {
 @Entity
 @Table(name = "CUSTOMER_ORDER")
 class Order(
-    private var status: Status,
     @ManyToMany private var products: List<Product>
 ) {
+
+    private var status: Status = Status.IN_PROGRESS
 
     @Id
     @GeneratedValue
