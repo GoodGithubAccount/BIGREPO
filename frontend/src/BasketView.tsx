@@ -42,50 +42,7 @@ export const GetItemBasket = () => {
 				<br />Your Total : {toFixedIfNecessary(totalRebate, 2)} DKK
 				<br />Money saved: {toFixedIfNecessary(totalPrice - totalRebate, 2)} DKK</div>
 
-			<form action='orderDetails'>
-				<label>Country: <input name='country' value='Denmark' readOnly /></label>
-				<br />
-				<label htmlFor='zipCode'>Zip Code: </label>
-				<input id='zipCode' name='zipCode' onBlur={handleZipCodeBlur} />
-				<br />
-				<label htmlFor='city'>City: </label>
-				<input id='city' name='city' readOnly />
-				<br />
-				<label>Address: <input name='address' /></label>
-				<br />
-				<label>Name: <input name='name' /></label>
-				<br />
-				<label htmlFor='phone'>Phone: </label>
-				<input id='phone' name='phone' />
-				<br />
-				<label htmlFor='email'>Email: </label>
-				<input id='email' name='email' />
-				<br />
-				<label>
-					<input type='checkbox' name='terms' />
-					Accept the terms and conditions <a href='https://www.shop.dtu.dk/en/terms-and-conditions-for-sales/'> (view here) </a>
-				</label>
-				<br />
-				<label>
-					<input type='checkbox' name='marketing' />
-					I would like to receive good offers
-				</label>
-				<br />
-				<label>
-					Optional order comment:
-					<textarea
-						ref={input => {
-							orderComment = input;
-						}}
-					></textarea>
-				</label>
-				<br />
-				<button onClick={() => {
-					const emailInput = document.getElementById('email') as HTMLInputElement;
-					const phoneInput = document.getElementsByName('phone')[0] as HTMLInputElement;
-					checkForm(emailInput, phoneInput);
-				}}> Place order </button>
-			</form>
+			<MyForm basket={basket}/>
 		</div>
 	);
 };
@@ -185,21 +142,82 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 	} else {
 		emailInput.setCustomValidity('Please enter a valid email');
 	}
+
+	return (isPhoneValid && isEmailValid);
 }
 let orderComment = null;
 
-/*
-const checkForm = (emailInput, phoneInput) => {
-	// simulate form validation and submission
-	console.log('Email:', emailInput.value);
-	console.log('Phone:', phoneInput.value);
-	console.log('Terms and conditions accepted:', termsAccepted.checked);
-	console.log('Marketing emails accepted:', marketingAccepted.checked);
-	console.log('Optional order comment:', orderComment.value);
+type BasketItemWrapper = {
+	basket: BasketItem[];
 };
+//TODO make validation for all other fields and empty order
+function MyForm({basket}: BasketItemWrapper) {
+	const [isFormValid, setIsFormValid] = useState(false);
 
-let termsAccepted = null;
-let marketingAccepted = null;
-let orderComment = null;
+	const handleFormSubmit = () => {
+		const emailInput = document.getElementById('email') as HTMLInputElement;
+		const phoneInput = document.getElementsByName('phone')[0] as HTMLInputElement;
+		checkForm(emailInput, phoneInput);
+		createNewOrder(basket);
+	};
 
- */
+	const handleInputChange = () => {
+		const emailInput = document.getElementById('email') as HTMLInputElement;
+		const phoneInput = document.getElementsByName('phone')[0] as HTMLInputElement;
+		setIsFormValid(checkForm(emailInput, phoneInput));
+	};
+
+	return (
+		<form action='orderDetails'>
+			<label>
+				Country: <input name='country' value='Denmark' readOnly/>
+			</label>
+			<br/>
+			<label htmlFor='zipCode'>Zip Code: </label>
+			<input id='zipCode' name='zipCode' onBlur={handleZipCodeBlur}/>
+			<br/>
+			<label htmlFor='city'>City: </label>
+			<input id='city' name='city' readOnly/>
+			<br/>
+			<label>
+				Address: <input name='address' onChange={handleInputChange}/>
+			</label>
+			<br/>
+			<label>
+				Name: <input name='name' onChange={handleInputChange}/>
+			</label>
+			<br/>
+			<label htmlFor='phone'>Phone: </label>
+			<input id='phone' name='phone' onChange={handleInputChange}/>
+			<br/>
+			<label htmlFor='email'>Email: </label>
+			<input id='email' name='email' onChange={handleInputChange}/>
+			<br/>
+			<label>
+				<input type='checkbox' name='terms' onChange={handleInputChange}/>
+				Accept the terms and conditions{' '}
+				<a href='https://www.shop.dtu.dk/en/terms-and-conditions-for-sales/'>
+					(view here)
+				</a>
+			</label>
+			<br/>
+			<label>
+				<input type='checkbox' name='marketing' onChange={handleInputChange}/>
+				I would like to receive good offers
+			</label>
+			<br/>
+			<label>
+				Optional order comment:
+				<textarea
+					ref={input => {
+						orderComment = input;
+					}}
+				></textarea>
+			</label>
+			<br/>
+			<button disabled={!isFormValid} onClick={handleFormSubmit}>
+				Place order
+			</button>
+		</form>
+	);
+}
