@@ -113,6 +113,10 @@ function handleZipCodeBlur(event: React.FocusEvent<HTMLInputElement>) {
 	const cityInput = document.getElementById('city') as HTMLInputElement;
 
 	// Make a request to the postnumre API endpoint with the entered zip code
+	if (zipCodeInput.value === '') {
+		return;
+	}
+
 	fetch(`https://api.dataforsyningen.dk/postnumre/${zipCodeInput.value}`)
 		.then(async response => {
 			if (!response.ok) {
@@ -125,11 +129,13 @@ function handleZipCodeBlur(event: React.FocusEvent<HTMLInputElement>) {
 			console.log('Valid ZIP code');
 			console.log('City:', data.navn);
 			cityInput.value = data.navn;
+			cityInput.setCustomValidity('');
 		})
 		.catch(error => {
 			console.log('Invalid ZIP code');
 			console.error(error);
-			cityInput.value = 'Please enter valid zipcode';
+			cityInput.value = '';
+			cityInput.setCustomValidity('Please enter valid zipcode');
 		});
 }
 
