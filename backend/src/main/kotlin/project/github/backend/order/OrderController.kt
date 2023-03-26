@@ -41,7 +41,7 @@ class OrderController(private val repository: OrderRepository, private val assem
      * The response status code is 201 (Created).
      */
     @PostMapping("/orders")
-    fun newProduct(@RequestBody newOrder: Order): ResponseEntity<*> {
+    fun newOrder(@RequestBody newOrder: Order): ResponseEntity<*> {
         newOrder.setStatus(Status.IN_PROGRESS)
         val entityModel: EntityModel<Order> = assembler.toModel(repository.save(newOrder))
 
