@@ -4,15 +4,16 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
-object CorsConfig {
-    val ALLOWED_METHODS = arrayOf("GET", "POST", "PUT", "DELETE")
-}
-
+/**
+ * This class configures WebMvc rules and among other
+ * things allows basic CRUD methods from foreign origins.
+ */
 @Configuration
 class WebConfig : WebMvcConfigurer {
+    val ALLOWED_METHODS = arrayOf("GET", "POST", "PUT", "DELETE")
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins("*")
-            .allowedMethods(*CorsConfig.ALLOWED_METHODS)
+            .allowedMethods(*ALLOWED_METHODS)
     }
 }
