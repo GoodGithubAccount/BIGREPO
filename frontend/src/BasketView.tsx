@@ -30,17 +30,20 @@ export const GetItemBasket = () => {
 
 					<button onClick={() => {
 						basketSubber(item);
-					}}>-</button>
+					}}>-
+					</button>
 
 					<button onClick={() => {
 						removeFromBasket(item);
-					}}>Remove</button>
+					}}>Remove
+					</button>
 				</div>
 			))}
 			<div>
 				Total: {totalPrice} DKK
-				<br />Your Total : {toFixedIfNecessary(totalRebate, 2)} DKK
-				<br />Money saved: {toFixedIfNecessary(totalPrice - totalRebate, 2)} DKK</div>
+				<br/>Your Total : {toFixedIfNecessary(totalRebate, 2)} DKK
+				<br/>Money saved: {toFixedIfNecessary(totalPrice - totalRebate, 2)} DKK
+			</div>
 
 			<MyForm basket={basket}/>
 		</div>
