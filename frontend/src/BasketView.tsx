@@ -8,29 +8,6 @@ export const GetItemBasket = () => {
 
 	const [totalRebate, setRebate] = React.useState(0);
 
-	async function handleSubmit(e: FormEvent) {
-		e.preventDefault();
-		const form = e.target as HTMLFormElement;
-		const formElements = form.elements as typeof form.elements & {
-			country: HTMLInputElement;
-			zipCode: HTMLInputElement;
-			city: HTMLInputElement;
-			address: HTMLInputElement;
-			name: HTMLInputElement;
-			phone: HTMLInputElement;
-			email: HTMLInputElement;
-		};
-		const country = encodeURIComponent(formElements.country.value);
-		const zipCode = encodeURIComponent(formElements.zipCode.value);
-		const city = encodeURIComponent(formElements.city.value);
-		const address = encodeURIComponent(formElements.address.value);
-		const name = encodeURIComponent(formElements.name.value);
-		const phone = encodeURIComponent(formElements.phone.value);
-		const email = encodeURIComponent(formElements.email.value);
-	}
-
-
-
 	React.useEffect(() => {
 		setTotal(
 			basket.reduce((acc, item) => acc + (item.itemData.price * item.amount), 0),
@@ -131,7 +108,6 @@ function toFixedIfNecessary(value: any, dp: number) {
 	return Number(parseFloat(value).toFixed(dp));
 }
 
-// Help from good friend Chattersbot
 function handleZipCodeBlur(event: React.FocusEvent<HTMLInputElement>) {
 	const zipCodeInput = event.target;
 	const cityInput = document.getElementById('city') as HTMLInputElement;
