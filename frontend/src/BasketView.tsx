@@ -132,7 +132,7 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 	const isPhoneValid = /^\d{8}$/.test(phoneInput.value);
 	const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
 
-	console.log('Optional order comment:', orderComment.value);
+	console.log('Optional order comment:', orderComment);
 
 	if (isPhoneValid) {
 		phoneInput.setCustomValidity('');
@@ -148,7 +148,8 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 
 	return (isPhoneValid && isEmailValid);
 }
-let orderComment = null;
+
+let orderComment: HTMLTextAreaElement | '';
 
 type BasketItemWrapper = {
 	basket: BasketItem[];
@@ -213,7 +214,11 @@ function MyForm({basket}: BasketItemWrapper) {
 				Optional order comment:
 				<textarea
 					ref={input => {
-						orderComment = input;
+						if (input === null) {
+							orderComment = '';
+						} else {
+							orderComment = input;
+						}
 					}}
 				></textarea>
 			</label>
