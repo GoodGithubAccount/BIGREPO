@@ -158,7 +158,8 @@ type BasketItemWrapper = {
 function MyForm({basket}: BasketItemWrapper) {
 	const [isFormValid, setIsFormValid] = useState(false);
 
-	const handleFormSubmit = () => {
+	const handleFormSubmit = (event) => {
+		event.preventDefault();
 		const emailInput = document.getElementById('email') as HTMLInputElement;
 		const phoneInput = document.getElementsByName('phone')[0] as HTMLInputElement;
 		checkForm(emailInput, phoneInput);
