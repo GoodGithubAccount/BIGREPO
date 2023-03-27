@@ -6,7 +6,8 @@ const ItemView = () => {
 
 	useEffect(() => {
 		const fetchProducts = async () => {
-			const productsUrl = 'http://localhost:8080/products';
+			console.log("VITE_API_URL: ", import.meta.env.VITE_API_URL);
+			const productsUrl = `${import.meta.env.VITE_API_URL}/products`;
 			const response = await fetch(productsUrl);
 			const data: ProductsResponse = await response.json();
 			setProducts(data._embedded.productList);
