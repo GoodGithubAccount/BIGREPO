@@ -2,15 +2,28 @@ import React, {useContext} from 'react';
 import {BasketContext} from './ShoppingHandler';
 import './Item.css';
 
-export type ItemData = {
+export type Product = {
+	id: string;
 	name: string;
-	id: number;
 	price: number;
+	currency: string;
 	rebateQuantity: number;
 	rebatePercent: number;
+	upsellProduct: string | null;
 };
 
-const ItemCreate = (props: ItemData) => {
+export type ProductsResponse = {
+	_embedded: {
+		productList: Product[];
+	};
+	_links: {
+		self: {
+			href: string;
+		};
+	};
+};
+
+const ItemCreate = (props: Product) => {
 	const {addToBasket} = useContext(BasketContext);
 
 	return (
