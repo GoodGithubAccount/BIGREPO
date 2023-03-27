@@ -14,7 +14,7 @@ function ItemView() {
 
 	return (
 		<div className='itemVIEW'>
-			<h1> ITEMS </h1>
+			<h1> Items </h1>
 			{itemList.map(item => (
 				<ItemCreate
 					key={item.id}
