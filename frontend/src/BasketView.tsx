@@ -132,8 +132,6 @@ function checkForm(emailInput: HTMLInputElement, phoneInput: HTMLInputElement) {
 	const isPhoneValid = /^\d{8}$/.test(phoneInput.value);
 	const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
 
-	console.log('Optional order comment:', orderComment);
-
 	if (isPhoneValid) {
 		phoneInput.setCustomValidity('');
 	} else {
@@ -154,6 +152,7 @@ let orderComment: HTMLTextAreaElement | '';
 type BasketItemWrapper = {
 	basket: BasketItem[];
 };
+
 //TODO make validation for all other fields and empty order
 function MyForm({basket}: BasketItemWrapper) {
 	const [isFormValid, setIsFormValid] = useState(false);
