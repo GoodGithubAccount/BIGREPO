@@ -57,13 +57,13 @@ class OrderController(private val repository: OrderRepository, private val assem
      */
     @GetMapping("/orders/{id}")
     fun getOrder(@PathVariable id: Long): EntityModel<Order> {
-        val product = repository.findById(id).orElseThrow { OrderNotFoundException(id) }
-        return assembler.toModel(product)
+        val order = repository.findById(id).orElseThrow { OrderNotFoundException(id) }
+        return assembler.toModel(order)
     }
 
     /**
      * Endpoint for completing an [Order] by its [id].
-     * @param id The ID of the product.
+     * @param id The ID of the order.
      * @return An HTTP '200 OK' if completed, or if the order [Status] is already COMPLETED or CANCELLED a '405 METHOD_NOT_ALLOWED'.
      */
     @PutMapping("/orders/{id}/complete")
@@ -83,7 +83,7 @@ class OrderController(private val repository: OrderRepository, private val assem
 
     /**
      * Endpoint for cancelling an [Order] with the given [id].
-     * @param id The ID of the product.
+     * @param id The ID of the order.
      * @return An HTTP '200 OK' if cancelled, or if the order [Status] is already CANCELLED or COMPLETED a '405 METHOD_NOT_ALLOWED'.
      */
     @DeleteMapping("/orders/{id}/cancel")
