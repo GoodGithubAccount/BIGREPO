@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d326542-a57a-4bf3-8e16-ca311ac50d2f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/src/BasketView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/BasketView.tsx" afterDir="false" />
+    <list default="true" id="0d326542-a57a-4bf3-8e16-ca311ac50d2f" name="Changes" comment="Anna commit 3: Style og layout&#10;Lavet overskrift&#10;Styling af overskrift&#10;Navn nederst på side&#10;Opsætning og afstande&#10;Farver">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/ItemView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/ItemView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +16,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="front_dev" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -33,7 +41,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\mads2\\GitHub\\BIGREPO\\frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\annae\\WebstormProjects\\BIGREPO\\frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -47,10 +55,73 @@
       <updated>1678114010145</updated>
       <workItem from="1678114011560" duration="702000" />
       <workItem from="1678351581816" duration="6792000" />
+      <workItem from="1679322026212" duration="607000" />
+      <workItem from="1679322663864" duration="21385000" />
     </task>
+    <task id="LOCAL-00001" summary="test af commit">
+      <created>1679324117882</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1679324117882</updated>
+    </task>
+    <task id="LOCAL-00002" summary="test af commit">
+      <created>1679324385108</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1679324385108</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Anna commit 1: Style og layout">
+      <created>1679327637674</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1679327637674</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Anna commit 1: Style og layout">
+      <created>1679920949629</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1679920949629</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Anna commit 2: Style og layout">
+      <created>1679921072719</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1679921072719</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Anna commit 3: Style og layout&#10;Lavet overskrift&#10;Styling af overskrift&#10;Navn nederst på side&#10;Opsætning og afstande&#10;Farver">
+      <created>1679923140842</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1679923140842</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="test af commit" />
+    <MESSAGE value="Anna commit 1: Style og layout" />
+    <MESSAGE value="Anna commit 2: Style og layout" />
+    <MESSAGE value="Anna commit 3: Style og layout&#10;Lavet overskrift&#10;Styling af overskrift&#10;Navn nederst på side&#10;Opsætning og afstande&#10;Farver" />
+    <option name="LAST_COMMIT_MESSAGE" value="Anna commit 3: Style og layout&#10;Lavet overskrift&#10;Styling af overskrift&#10;Navn nederst på side&#10;Opsætning og afstande&#10;Farver" />
   </component>
 </project>
