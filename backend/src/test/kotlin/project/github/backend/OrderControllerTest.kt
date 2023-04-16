@@ -150,6 +150,16 @@ class OrderControllerTest(
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
+    @DirtiesContext
+    @Test
+    fun `getting an invalid order ID returns 400 BAD REQUEST`() {
+        val invalidId = "a"
+        val response = getEntityForId(invalidId)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")
     private fun getEntityForAllOrders() = client.getForEntity<String>("/orders")
     private fun putCompleteOrderForEntity(order: Order) =
         client.exchange("/orders/{id}/complete", HttpMethod.PUT, HttpEntity(order), Order::class.java, order.getId())
