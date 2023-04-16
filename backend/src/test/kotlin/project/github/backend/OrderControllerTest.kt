@@ -1,6 +1,7 @@
 package project.github.backend
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,15 +11,26 @@ import org.springframework.test.annotation.DirtiesContext
 import project.github.backend.order.Order
 import project.github.backend.order.OrderRepository
 import project.github.backend.order.Status
+import javax.net.ssl.HttpsURLConnection
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["spring.datasource.url=jdbc:h2:mem:testdb"]
+    properties = [
+        "spring.datasource.url=jdbc:h2:mem:testdb",
+        "spring.config.location=classpath:application-test.properties",
+    ]
 )
 class OrderControllerTest(
     @Autowired val client: TestRestTemplate,
     @Autowired val orderRepository: OrderRepository,
 ) {
+
+    @BeforeEach
+    fun setup() {
+        HttpsURLConnection.setDefaultHostnameVerifier { hostname, _ ->
+            hostname == "localhost"
+        }
+    }
 
     @DirtiesContext
     @Test

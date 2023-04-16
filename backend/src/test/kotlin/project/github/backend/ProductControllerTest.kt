@@ -1,6 +1,7 @@
 package project.github.backend
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,14 +13,27 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.annotation.DirtiesContext
 import project.github.backend.product.Product
 import project.github.backend.product.ProductRepository
+import javax.net.ssl.HttpsURLConnection
 import kotlin.random.Random
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["spring.datasource.url=jdbc:h2:mem:testdb"]
+    properties = [
+        "spring.datasource.url=jdbc:h2:mem:testdb",
+        "spring.config.location=classpath:application-test.properties"
+    ]
 )
-class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired val repository: ProductRepository) {
+class ProductControllerTest(
+    @Autowired val client: TestRestTemplate,
+    @Autowired val repository: ProductRepository
+) {
 
+    @BeforeEach
+    fun setup() {
+        HttpsURLConnection.setDefaultHostnameVerifier { hostname, _ ->
+            hostname == "localhost"
+        }
+    }
     @Test
     fun `putting a product with a different ID will set new ID`() {
         val productId = "unique-id"
