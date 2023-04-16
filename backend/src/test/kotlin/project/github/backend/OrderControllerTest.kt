@@ -149,14 +149,21 @@ class OrderControllerTest(
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
-
-    @DirtiesContext
+    
     @Test
     fun `getting an invalid order ID returns 400 BAD REQUEST`() {
         val invalidId = "a"
         val response = getEntityForId(invalidId)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `getting an non-existing order ID returns 404 NOT FOUND`() {
+        val nonExistingId = "0"
+        val response = getEntityForId(nonExistingId)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
     private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")
