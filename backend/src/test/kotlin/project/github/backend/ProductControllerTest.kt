@@ -62,7 +62,8 @@ class ProductControllerTest(
             upsellProduct = null
         )
 
-        putProductForEntity(productWithDifferentID, productId)
+        val response = putProductForEntity(productWithDifferentID, productId)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
 
         val savedProduct = repository.findById(productId).get()
 
