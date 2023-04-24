@@ -1,5 +1,7 @@
 package project.github.backend.order
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.IanaLinkRelations
@@ -11,19 +13,27 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import project.github.backend.LoadDatabase
+import project.github.backend.product.ProductNotFoundException
+import project.github.backend.product.ProductRepository
 import java.util.stream.Collectors
 
 @RestController
-class OrderController(private val repository: OrderRepository, private val assembler: OrderModelAssembler) {
+class OrderController(
+    private val orderRepository: OrderRepository,
+    private val productRepository: ProductRepository,
+    val assembler: OrderModelAssembler
+) {
+    private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
 
     /**
-     * Endpoint for Retrieving all [Order]s from the [repository] and returns them as a collection of [EntityModel]s.
-     * @return A [CollectionModel] containing [EntityModel]s of all orders in the [repository],
+     * Endpoint for Retrieving all [Order]s from the [orderRepository] and returns them as a collection of [EntityModel]s.
+     * @return A [CollectionModel] containing [EntityModel]s of all orders in the [orderRepository],
      * along with a self-referencing link.
      */
     @GetMapping("/orders")
     fun all(): CollectionModel<EntityModel<Order>> {
-        val ordersStream = this.repository.findAll().stream()
+        val ordersStream = this.orderRepository.findAll().stream()
         val ordersAsEntityModel = ordersStream.map { order ->
             assembler.toModel(order)
         }.collect(Collectors.toList())
@@ -34,20 +44,40 @@ class OrderController(private val repository: OrderRepository, private val assem
     }
 
     /**
-     * Endpoint for saving a given [Order] instance to the [OrderRepository].
-     * @param newOrder The [Order] entity to be saved.
+     * Endpoint for saving a [newOrder]. Converts the list of [OrderItemRequest]s to
+     * a list of [OrderItem]s, and saves them to the [orderRepository] as a new [Order].
+     * @param newOrder The list of [OrderItemRequest]s to convert to a list of [OrderItem].
      * @return A [ResponseEntity] object with the saved [Order] in the response body
      * and a self-referencing link in the response header.
-     * The response status code is 201 (Created).
+     * The response status code is 201 CREATED.
+     * @throws ProductNotFoundException If any of the [OrderItemRequest]s' [productId]s cannot
+     * be found in the [ProductRepository].
      */
     @PostMapping("/orders")
-    fun newOrder(@RequestBody newOrder: Order): ResponseEntity<*> {
-        newOrder.setStatus(Status.IN_PROGRESS)
-        val entityModel: EntityModel<Order> = assembler.toModel(repository.save(newOrder))
+    fun newOrder(@RequestBody newOrder: NewOrder): ResponseEntity<*> {
+        val order = Order()
+        val orderItems = newOrder.items.map { orderItemRequest ->
+            val product = productRepository.findById(orderItemRequest.productId)
+                .orElseThrow { ProductNotFoundException(orderItemRequest.productId) }
+            OrderItem(product, orderItemRequest.quantity)
+        }
+        order.orderItems = orderItems
+        order.setStatus(Status.IN_PROGRESS)
 
+        val entityModel: EntityModel<Order> = assembler.toModel(orderRepository.save(order))
+
+        log.info("Sending response: $order")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Order>>(entityModel)
     }
+
+    data class OrderItemRequest(
+        val productId: String, val quantity: Int
+    )
+
+    data class NewOrder(
+        val items: List<OrderItemRequest>
+    )
 
     /**
      * Endpoint for retrieving the details of an [Order] with the specified ID.
@@ -57,7 +87,7 @@ class OrderController(private val repository: OrderRepository, private val assem
      */
     @GetMapping("/orders/{id}")
     fun getOrder(@PathVariable id: Long): EntityModel<Order> {
-        val order = repository.findById(id).orElseThrow { OrderNotFoundException(id) }
+        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
         return assembler.toModel(order)
     }
 
@@ -68,7 +98,7 @@ class OrderController(private val repository: OrderRepository, private val assem
      */
     @PutMapping("/orders/{id}/complete")
     fun complete(@PathVariable id: Long): ResponseEntity<*> {
-        val order = repository.findById(id).orElseThrow { OrderNotFoundException(id) }
+        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
         if (order.getStatus() == Status.COMPLETED || order.getStatus() == Status.CANCELLED) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
@@ -78,7 +108,7 @@ class OrderController(private val repository: OrderRepository, private val assem
                 )
         }
         order.setStatus(Status.COMPLETED)
-        return ResponseEntity.ok(assembler.toModel(repository.save(order)))
+        return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
     }
 
     /**
@@ -88,7 +118,7 @@ class OrderController(private val repository: OrderRepository, private val assem
      */
     @DeleteMapping("/orders/{id}/cancel")
     fun cancel(@PathVariable id: Long): ResponseEntity<*> {
-        val order = repository.findById(id).orElseThrow { OrderNotFoundException(id) }
+        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
         if (order.getStatus() == Status.CANCELLED || order.getStatus() == Status.COMPLETED) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
@@ -98,6 +128,6 @@ class OrderController(private val repository: OrderRepository, private val assem
                 )
         }
         order.setStatus(Status.CANCELLED)
-        return ResponseEntity.ok(assembler.toModel(repository.save(order)))
+        return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
     }
 }

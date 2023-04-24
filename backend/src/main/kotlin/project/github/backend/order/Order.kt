@@ -18,7 +18,7 @@ enum class Status {
 @Entity
 @Table(name = "CUSTOMER_ORDER")
 class Order(
-    @ManyToMany private var products: List<Product> = emptyList()
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL]) var orderItems: List<OrderItem> = emptyList()
 ) {
 
     private var status: Status = Status.IN_PROGRESS
@@ -65,9 +65,24 @@ class Order(
 
     fun getId(): Long = this.id?: throw IllegalStateException("ID has not been set yet")
     fun getStatus(): Status = this.status
-    fun getProducts(): List<Product> = this.products
-
     fun setStatus(status: Status) {
         this.status = status
     }
+}
+
+@Entity
+class OrderItem(
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private var product: Product,
+
+    @Column(nullable = false)
+    private var quantity: Int
+) {
+    @Id
+    @GeneratedValue
+    private var id: Long? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private var order: Order? = null
 }
