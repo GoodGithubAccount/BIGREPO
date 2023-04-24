@@ -41,12 +41,4 @@ class EntityNotFoundAdvice {
             path = (request as ServletWebRequest).request.requestURI
         )
     }
-
-    data class ErrorDetails(
-        val timestamp: String,
-        val status: Int,
-        val error: String,
-        val message: String,
-        val path: String
-    )
 }
