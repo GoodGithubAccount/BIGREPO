@@ -190,6 +190,20 @@ class OrderControllerTest(
         println(response.body)
     }
 
+    @Test
+    fun `posting an order with invalid product returns 404 NOT FOUND`() {
+        val newOrder = OrderController.NewOrder(
+            listOf(
+                OrderController.OrderItemRequest("p1", 2), OrderController.OrderItemRequest("p2", 1)
+            )
+        )
+
+        val response = postOrderForEntity(newOrder)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body.toString()).contains("p1")
+    }
+
     private fun postOrderForEntity(order: OrderController.NewOrder) =
         client.postForEntity<String>("/orders", HttpEntity(order))
 
