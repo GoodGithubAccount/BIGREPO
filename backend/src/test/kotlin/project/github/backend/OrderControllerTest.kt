@@ -9,8 +9,11 @@ import org.springframework.boot.test.web.client.*
 import org.springframework.http.*
 import org.springframework.test.annotation.DirtiesContext
 import project.github.backend.order.Order
+import project.github.backend.order.OrderController
 import project.github.backend.order.OrderRepository
 import project.github.backend.order.Status
+import project.github.backend.product.Product
+import project.github.backend.product.ProductRepository
 import javax.net.ssl.HttpsURLConnection
 
 @SpringBootTest(
@@ -23,6 +26,7 @@ import javax.net.ssl.HttpsURLConnection
 class OrderControllerTest(
     @Autowired val client: TestRestTemplate,
     @Autowired val orderRepository: OrderRepository,
+    @Autowired val productRepository: ProductRepository
 ) {
 
     @BeforeEach
@@ -165,6 +169,29 @@ class OrderControllerTest(
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
+
+    @Test
+    fun `posting an order returns 201 CREATED`() {
+        val p1 = Product("p1", "p1", 0, "DKK", 0, 0, null)
+        val p2 = Product("p2", "p2", 0, "USD", 0, 0, "p1")
+
+        productRepository.save(p1)
+        productRepository.save(p2)
+
+        val newOrder = OrderController.NewOrder(
+            listOf(
+                OrderController.OrderItemRequest("p1", 2), OrderController.OrderItemRequest("p2", 1)
+            )
+        )
+
+        val response = postOrderForEntity(newOrder)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        println(response.body)
+    }
+
+    private fun postOrderForEntity(order: OrderController.NewOrder) =
+        client.postForEntity<String>("/orders", HttpEntity(order))
 
     private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")
     private fun getEntityForAllOrders() = client.getForEntity<String>("/orders")
