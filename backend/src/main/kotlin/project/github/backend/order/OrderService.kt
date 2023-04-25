@@ -2,8 +2,10 @@ package project.github.backend.order
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import project.github.backend.order.exceptions.IllegalDuplicateProductException
 import project.github.backend.product.ProductNotFoundException
 import project.github.backend.product.ProductRepository
+import project.github.backend.product.Product
 
 /**
  * Service that provides order related operations.
@@ -14,13 +16,27 @@ class OrderService(
     private val orderRepository: OrderRepository
 ) {
     /**
-     * Creates an order and saves it to the database.
+     * Creates an [Order] and saves it to the database.
+     * @param newOrder the list of items with their quantities to be ordered.
+     * @throws IllegalDuplicateProductException if the same [Product] is ordered twice.
+     * @throws ProductNotFoundException if a product in the [OrderController.NewOrder] is not found.
      */
     @Transactional
     fun createOrder(newOrder: OrderController.NewOrder): Order {
+        val productIds = mutableSetOf<String>()
+
         val orderItems = newOrder.items.map { orderItemRequest ->
-            val product = productRepository.findById(orderItemRequest.productId)
-                .orElseThrow { ProductNotFoundException(orderItemRequest.productId) }
+            val productId = orderItemRequest.productId
+
+            if (productIds.contains(productId)) {
+                throw IllegalDuplicateProductException(productId)
+            }
+
+            val product = productRepository.findById(productId)
+                .orElseThrow { ProductNotFoundException(productId) }
+
+            productIds.add(productId)
+
             OrderItem(product = product, quantity = orderItemRequest.quantity)
         }
 
