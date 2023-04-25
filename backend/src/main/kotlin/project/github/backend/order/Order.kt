@@ -15,8 +15,8 @@ enum class Status {
 /**
  * This class represents an order as an [Entity].
  * @property id The unique identifier of the order.
- * @property status The status of the order.
- * @property products A list of [Product]s in the order.
+ * @property status The [Status] of the order.
+ * @property orderItems The list of [OrderItem]s in the order.
  */
 @Entity
 @Table(name = "CUSTOMER_ORDER")
@@ -28,7 +28,7 @@ class Order private constructor(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.EAGER
-    ) @JsonManagedReference private val _orderItems: MutableList<OrderItem> = mutableListOf()
+    ) @JsonManagedReference @JsonIgnore private val _orderItems: MutableList<OrderItem> = mutableListOf()
 ) {
     /**
      * TODO Should not be used :)
