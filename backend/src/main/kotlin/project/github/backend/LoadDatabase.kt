@@ -32,11 +32,11 @@ class LoadDatabase {
         val p2 = Product("vitamin-c-500-250", "C-vitamin, 500mg, 250 stk", 150, "DKK", 2, 25, "vitamin-c-depot-500-250")
         val o1 = Order(
             listOf(
-                OrderItem(p1, 10), OrderItem(p2, 5), OrderItem(p2, 5)
+                OrderItem(product = p1, quantity = 10), OrderItem(product = p2, quantity = 5)
             )
         )
         val o2 = Order(
-            listOf(OrderItem(p2, 2))
+            listOf(OrderItem(product = p2, quantity = 2))
         )
 
         log.info("Preloading " + productRepository.save(p1))

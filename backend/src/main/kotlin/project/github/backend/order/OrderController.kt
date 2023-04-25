@@ -14,14 +14,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
-import project.github.backend.product.ProductNotFoundException
-import project.github.backend.product.ProductRepository
 import java.util.stream.Collectors
 
 @RestController
 class OrderController(
     private val orderRepository: OrderRepository,
-    private val productRepository: ProductRepository,
+    private val orderService: OrderService,
     val assembler: OrderModelAssembler
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
@@ -50,21 +48,11 @@ class OrderController(
      * @return A [ResponseEntity] object with the saved [Order] in the response body
      * and a self-referencing link in the response header.
      * The response status code is 201 CREATED.
-     * @throws ProductNotFoundException If any of the [OrderItemRequest]s' [productId]s cannot
-     * be found in the [ProductRepository].
      */
     @PostMapping("/orders")
     fun newOrder(@RequestBody newOrder: NewOrder): ResponseEntity<*> {
-        val order = Order()
-        val orderItems = newOrder.items.map { orderItemRequest ->
-            val product = productRepository.findById(orderItemRequest.productId)
-                .orElseThrow { ProductNotFoundException(orderItemRequest.productId) }
-            OrderItem(product, orderItemRequest.quantity)
-        }
-        order.orderItems = orderItems
-        order.setStatus(Status.IN_PROGRESS)
-
-        val entityModel: EntityModel<Order> = assembler.toModel(orderRepository.save(order))
+        val order = orderService.createOrder(newOrder)
+        val entityModel: EntityModel<Order> = assembler.toModel(order)
 
         log.info("Sending response: $order")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

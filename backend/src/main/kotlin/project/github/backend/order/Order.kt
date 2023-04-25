@@ -1,8 +1,11 @@
 package project.github.backend.order
 
+import com.fasterxml.jackson.annotation.*
 import jakarta.persistence.*
 import project.github.backend.product.Product
 import java.lang.IllegalStateException
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 enum class Status {
@@ -17,15 +20,27 @@ enum class Status {
  */
 @Entity
 @Table(name = "CUSTOMER_ORDER")
-class Order(
-    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL]) var orderItems: List<OrderItem> = emptyList()
-) {
-
-    private var status: Status = Status.IN_PROGRESS
-
+class Order private constructor(
     @Id
-    @GeneratedValue
-    private var id: Long? = null
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+    private var status: Status = Status.IN_PROGRESS,
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private val _orderItems: MutableList<OrderItem> = mutableListOf()
+) {
+    /**
+     * TODO Should not be used :)
+     */
+    constructor() : this(null, Status.IN_PROGRESS)
+
+    val orderItems: List<OrderItem>
+        get() = ArrayList(_orderItems)
+
+    constructor(orderItems: List<OrderItem>) : this() {
+        _orderItems.addAll(orderItems)
+        orderItems.forEach { it.order = this }
+    }
 
     /**
      * Returns true if the [Order]'s [id]s are equal.
@@ -72,17 +87,57 @@ class Order(
 
 @Entity
 class OrderItem(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
+    val id: Long? = null,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    var order: Order? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    private var product: Product,
-
-    @Column(nullable = false)
-    private var quantity: Int
+    val product: Product,
+    val quantity: Int
 ) {
-    @Id
-    @GeneratedValue
-    private var id: Long? = null
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private var order: Order? = null
+    /**
+     * Returns true if the [OrderItem]'s [id]s are equal and the quantities are equal.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (other !is OrderItem) {
+            return false
+        }
+        return this.id == other.id && this.quantity == other.quantity
+    }
+
+    /**
+     * Returns a hash code value for the [OrderItem] based solely on the [id].
+     */
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    private fun toStringBuilder(): String {
+        val className = OrderItem::class.java.name
+        val declaredFields = OrderItem::class.java.declaredFields
+        val sb = StringBuilder("$className { ")
+        val fieldStrings = declaredFields.mapNotNull { field ->
+            if (field.name != "order") {
+                "${field.name}='${field.get(this)}'"
+            } else {
+                null
+            }
+        }
+        sb.append(fieldStrings.joinToString(", "))
+        sb.append(" }")
+        return sb.toString()
+    }
+
+    /**
+     * Returns a string representation of [OrderItem] with all declared fields and their values.
+     */
+    override fun toString(): String {
+        return toStringBuilder()
+    }
 }

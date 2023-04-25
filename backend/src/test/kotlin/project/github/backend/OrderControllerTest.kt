@@ -191,6 +191,23 @@ class OrderControllerTest(
     }
 
     @Test
+    fun `posting an order saves the order`() {
+        val p1 = Product("p1", "p1", 0, "DKK", 0, 0, null)
+        productRepository.save(p1)
+        val newOrder = OrderController.NewOrder(
+            listOf(
+                OrderController.OrderItemRequest("p1", 2)
+            )
+        )
+
+        val createdOrder = postOrderForObject(newOrder)!!
+        val order = orderRepository.findById(createdOrder.getId())
+
+        assertThat(order).isPresent
+        assertThat(order.get().orderItems.first().product).isEqualTo(p1)
+    }
+
+    @Test
     fun `posting an order with invalid product returns 404 NOT FOUND`() {
         val newOrder = OrderController.NewOrder(
             listOf(
@@ -206,6 +223,9 @@ class OrderControllerTest(
 
     private fun postOrderForEntity(order: OrderController.NewOrder) =
         client.postForEntity<String>("/orders", HttpEntity(order))
+
+    private fun postOrderForObject(order: OrderController.NewOrder) =
+        client.postForObject<Order>("/orders", HttpEntity(order))
 
     private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")
     private fun getEntityForAllOrders() = client.getForEntity<String>("/orders")
