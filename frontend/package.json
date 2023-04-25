@@ -11,8 +11,13 @@
     "test": "cross-env VITE_API_URL=https://localhost/api npx vitest"
   },
   "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "jsdom": "^21.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "vitest": "^0.29.8"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
