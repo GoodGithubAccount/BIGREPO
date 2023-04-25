@@ -51,7 +51,7 @@ export const GetItemBasket = () => {
 };
 
 async function createNewOrder(basket: BasketItem[]) {
-	const url = 'http://localhost:8080/orders';
+	const url = 'https://localhost/api/orders';
 
 	const basketItems = basket.flatMap(({products, amount}) => Array.from({length: amount}, () => ({
 		id: products.id,

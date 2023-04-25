@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cross-env VITE_API_URL=https://62.66.147.196:8080 tsc && vite build --mode production",
+    "build": "cross-env VITE_API_URL=https://hdfat.dk/api tsc && vite build --mode production",
     "preview": "vite preview",
-    "deploy": "cross-env VITE_API_URL=https://62.66.147.196:8080 ntl deploy"
+    "deploy": "cross-env VITE_API_URL=https://hdfat.dk/api ntl deploy",
+    "test": "cross-env VITE_API_URL=https://localhost/api npx vitest"
   },
   "dependencies": {
     "react": "^18.2.0",
