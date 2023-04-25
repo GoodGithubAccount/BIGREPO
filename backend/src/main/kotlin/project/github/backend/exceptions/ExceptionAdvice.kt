@@ -46,5 +46,4 @@ class ExceptionAdvice {
         )
         return ResponseEntity(errorDetails, status)
     }
-
 }

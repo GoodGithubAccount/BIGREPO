@@ -8,14 +8,20 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
+/**
+ * The enum class representing the status of an [Order].
+ * @property IN_PROGRESS The order is in progress.
+ * @property COMPLETED The order is completed.
+ * @property CANCELLED The order is cancelled.
+ */
 enum class Status {
     IN_PROGRESS, COMPLETED, CANCELLED
 }
 
 /**
  * This class represents an order as an [Entity].
- * @property id The unique identifier of the order.
- * @property status The [Status] of the order.
+ * @property id The unique identifier.
+ * @property status The current [Status] of the order.
  * @property orderItems The list of [OrderItem]s in the order.
  */
 @Entity
@@ -86,6 +92,13 @@ class Order private constructor(
     }
 }
 
+/**
+ * This class represents an [Product] with a quantity as an [Entity].
+ * @property id The unique identifier.
+ * @property order The [Order] linked to the [OrderItem].
+ * @property product The represented [Product].
+ * @property quantity The number of [product]s.
+ */
 @Entity
 class OrderItem(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonProperty("id") val id: Long? = null,
