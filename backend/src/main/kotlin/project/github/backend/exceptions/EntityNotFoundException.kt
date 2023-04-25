@@ -17,6 +17,10 @@ import java.time.Instant
  */
 open class EntityNotFoundException(message: String) : RuntimeException(message)
 
+/**
+ * This class serves as an exception handler for the [EntityNotFoundException]
+ * which may be thrown by other controllers or services.
+ */
 @ControllerAdvice
 class EntityNotFoundAdvice {
 
