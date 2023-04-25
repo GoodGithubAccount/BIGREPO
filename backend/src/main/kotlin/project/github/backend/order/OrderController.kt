@@ -5,15 +5,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.IanaLinkRelations
-import org.springframework.hateoas.MediaTypes
-import org.springframework.hateoas.mediatype.problem.Problem
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
+import project.github.backend.order.exceptions.IllegalOrderCancellationException
+import project.github.backend.order.exceptions.IllegalOrderCompletionException
+import project.github.backend.order.exceptions.OrderNotFoundException
 import java.util.stream.Collectors
 
 @RestController
@@ -89,11 +88,7 @@ class OrderController(
         val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
         if (order.getStatus() == Status.COMPLETED || order.getStatus() == Status.CANCELLED) {
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE).body(
-                    Problem.create().withTitle("Method not allowed")
-                        .withDetail("You can not complete an order that is in the ${order.getStatus()} status")
-                )
+            throw IllegalOrderCompletionException(id, order.getStatus())
         }
         order.setStatus(Status.COMPLETED)
         return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
@@ -109,11 +104,7 @@ class OrderController(
         val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
         if (order.getStatus() == Status.CANCELLED || order.getStatus() == Status.COMPLETED) {
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE).body(
-                    Problem.create().withTitle("Method not allowed")
-                        .withDetail("You can not cancel an order that is in the ${order.getStatus()} status")
-                )
+            throw IllegalOrderCancellationException(id, order.getStatus())
         }
         order.setStatus(Status.CANCELLED)
         return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))

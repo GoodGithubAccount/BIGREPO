@@ -230,7 +230,7 @@ class OrderControllerTest(
     private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")
     private fun getEntityForAllOrders() = client.getForEntity<String>("/orders")
     private fun putCompleteOrderForEntity(order: Order) =
-        client.exchange("/orders/{id}/complete", HttpMethod.PUT, HttpEntity(order), Order::class.java, order.getId())
+        client.exchange<String>("/orders/{id}/complete", HttpMethod.PUT, HttpEntity(order), order.getId())
     private fun deleteCancelOrderForEntity(order: Order) =
-        client.exchange("/orders/{id}/cancel", HttpMethod.DELETE, HttpEntity(order), Order::class.java, order.getId())
+        client.exchange<String>("/orders/{id}/cancel", HttpMethod.DELETE, HttpEntity(order), order.getId())
 }
