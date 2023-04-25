@@ -5,7 +5,6 @@ import jakarta.persistence.*
 import project.github.backend.product.Product
 import java.lang.IllegalStateException
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -26,7 +25,7 @@ enum class Status {
  */
 @Entity
 @Table(name = "CUSTOMER_ORDER")
-class Order private constructor(
+class Order(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long? = null,
     private var status: Status = Status.IN_PROGRESS,
     @OneToMany(
@@ -34,18 +33,11 @@ class Order private constructor(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.EAGER
-    ) @JsonManagedReference @JsonIgnore private val _orderItems: MutableList<OrderItem> = mutableListOf()
+    ) @JsonManagedReference @JsonIgnore var orderItems: List<OrderItem> = emptyList()
 ) {
-    /**
-     * TODO Should not be used :)
-     */
-    constructor() : this(null, Status.IN_PROGRESS)
 
-    val orderItems: List<OrderItem>
-        get() = ArrayList(_orderItems)
-
-    constructor(orderItems: List<OrderItem>) : this() {
-        _orderItems.addAll(orderItems)
+    constructor(orderItems: List<OrderItem> = emptyList()) : this(null, Status.IN_PROGRESS) {
+        this.orderItems = orderItems
         orderItems.forEach { it.order = this }
     }
 
