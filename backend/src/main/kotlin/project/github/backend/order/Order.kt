@@ -21,13 +21,14 @@ enum class Status {
 @Entity
 @Table(name = "CUSTOMER_ORDER")
 class Order private constructor(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long? = null,
     private var status: Status = Status.IN_PROGRESS,
-    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonManagedReference
-    private val _orderItems: MutableList<OrderItem> = mutableListOf()
+    @OneToMany(
+        mappedBy = "order",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
+    ) @JsonManagedReference private val _orderItems: MutableList<OrderItem> = mutableListOf()
 ) {
     /**
      * TODO Should not be used :)
@@ -78,7 +79,7 @@ class Order private constructor(
         return toStringBuilder()
     }
 
-    fun getId(): Long = this.id?: throw IllegalStateException("ID has not been set yet")
+    fun getId(): Long = this.id ?: throw IllegalStateException("ID has not been set yet")
     fun getStatus(): Status = this.status
     fun setStatus(status: Status) {
         this.status = status
@@ -87,17 +88,9 @@ class Order private constructor(
 
 @Entity
 class OrderItem(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")
-    val id: Long? = null,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    @JsonBackReference
-    var order: Order? = null,
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    val product: Product,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonProperty("id") val id: Long? = null,
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "order_id") @JsonBackReference var order: Order? = null,
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "product_id") val product: Product,
     val quantity: Int
 ) {
 
