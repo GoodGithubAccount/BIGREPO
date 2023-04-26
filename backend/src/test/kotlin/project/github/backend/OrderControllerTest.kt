@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.*
 import org.springframework.http.*
 import org.springframework.test.annotation.DirtiesContext
-import project.github.backend.order.Order
-import project.github.backend.order.OrderController
-import project.github.backend.order.OrderRepository
-import project.github.backend.order.Status
+import project.github.backend.order.*
 import project.github.backend.product.Product
 import project.github.backend.product.ProductRepository
 import javax.net.ssl.HttpsURLConnection
@@ -178,9 +175,9 @@ class OrderControllerTest(
         productRepository.save(p1)
         productRepository.save(p2)
 
-        val newOrder = OrderController.NewOrder(
+        val newOrder = OrderService.NewOrder(
             listOf(
-                OrderController.OrderItemRequest("p1", 2), OrderController.OrderItemRequest("p2", 1)
+                OrderService.OrderItemRequest("p1", 2), OrderService.OrderItemRequest("p2", 1)
             )
         )
 
@@ -194,9 +191,9 @@ class OrderControllerTest(
     fun `posting an order saves the order`() {
         val p1 = Product("p1", "p1", 0, "DKK", 0, 0, null)
         productRepository.save(p1)
-        val newOrder = OrderController.NewOrder(
+        val newOrder = OrderService.NewOrder(
             listOf(
-                OrderController.OrderItemRequest("p1", 2)
+                OrderService.OrderItemRequest("p1", 2)
             )
         )
 
@@ -209,9 +206,9 @@ class OrderControllerTest(
 
     @Test
     fun `posting an order with invalid product returns 404 NOT FOUND`() {
-        val newOrder = OrderController.NewOrder(
+        val newOrder = OrderService.NewOrder(
             listOf(
-                OrderController.OrderItemRequest("p1", 2), OrderController.OrderItemRequest("p2", 1)
+                OrderService.OrderItemRequest("p1", 2), OrderService.OrderItemRequest("p2", 1)
             )
         )
 
@@ -221,10 +218,10 @@ class OrderControllerTest(
         assertThat(response.body.toString()).contains("p1")
     }
 
-    private fun postOrderForEntity(order: OrderController.NewOrder) =
+    private fun postOrderForEntity(order: OrderService.NewOrder) =
         client.postForEntity<String>("/orders", HttpEntity(order))
 
-    private fun postOrderForObject(order: OrderController.NewOrder) =
+    private fun postOrderForObject(order: OrderService.NewOrder) =
         client.postForObject<Order>("/orders", HttpEntity(order))
 
     private fun getEntityForId(id: String) = client.getForEntity<String>("/orders/$id")

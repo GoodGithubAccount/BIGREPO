@@ -14,6 +14,7 @@ import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.OrderNotFoundException
 import java.util.stream.Collectors
+import project.github.backend.order.OrderService.NewOrder as NewOrder
 
 @RestController
 class OrderController(
@@ -41,9 +42,9 @@ class OrderController(
     }
 
     /**
-     * Endpoint for saving a [newOrder]. Converts the list of [OrderItemRequest]s to
+     * Endpoint for saving a [newOrder]. Converts the list of [OrderService.OrderItemRequest]s to
      * a list of [OrderItem]s, and saves them to the [orderRepository] as a new [Order].
-     * @param newOrder The list of [OrderItemRequest]s to convert to a list of [OrderItem].
+     * @param newOrder The list of [OrderService.OrderItemRequest]s to convert to a list of [OrderItem].
      * @return A [ResponseEntity] object with the saved [Order] in the response body
      * and a self-referencing link in the response header.
      * The response status code is 201 CREATED.
@@ -57,14 +58,6 @@ class OrderController(
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Order>>(entityModel)
     }
-
-    data class OrderItemRequest(
-        val productId: String, val quantity: Int
-    )
-
-    data class NewOrder(
-        val items: List<OrderItemRequest>
-    )
 
     /**
      * Endpoint for retrieving the details of an [Order] with the specified ID.
