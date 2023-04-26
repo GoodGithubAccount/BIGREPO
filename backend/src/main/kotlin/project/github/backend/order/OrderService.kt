@@ -3,6 +3,7 @@ package project.github.backend.order
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import project.github.backend.order.exceptions.IllegalDuplicateProductException
+import project.github.backend.order.exceptions.OrderNotFoundException
 import project.github.backend.product.ProductNotFoundException
 import project.github.backend.product.ProductRepository
 import project.github.backend.product.Product
@@ -54,4 +55,13 @@ class OrderService(
     data class NewOrder(
         val items: List<OrderItemRequest>
     )
+
+    /**
+     * Returns an [Order] from the database by its id.
+     * @param id the id of the [Order].
+     * @throws OrderNotFoundException if the [Order] is not found.
+     */
+    fun getOrder(id: Long): Order =
+        orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
+
 }

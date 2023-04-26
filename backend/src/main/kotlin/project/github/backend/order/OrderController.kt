@@ -67,7 +67,7 @@ class OrderController(
      */
     @GetMapping("/orders/{id}")
     fun getOrder(@PathVariable id: Long): EntityModel<Order> {
-        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
+        val order = orderService.getOrder(id)
         return assembler.toModel(order)
     }
 
