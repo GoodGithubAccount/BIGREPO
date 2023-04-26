@@ -102,4 +102,13 @@ class OrderService(
         order.setStatus(Status.CANCELLED)
         return order
     }
+
+    /**
+     * Saves an [Order] to the database.
+     * @param order the [Order] to be saved, must not be null.
+     * @return the saved [Order].
+     */
+    fun save(order: Order): Order {
+        return orderRepository.save(order)
+    }
 }

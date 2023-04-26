@@ -19,15 +19,14 @@ import project.github.backend.order.OrderService.NewOrder
 
 @RestController
 class OrderController(
-    private val orderRepository: OrderRepository,
     private val orderService: OrderService,
     val assembler: OrderModelAssembler
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
 
     /**
-     * Endpoint for Retrieving all [Order]s from the [orderRepository] and returns them as a collection of [EntityModel]s.
-     * @return A [CollectionModel] containing [EntityModel]s of all orders in the [orderRepository],
+     * Endpoint for retrieving all [Order]s from the [orderService] and returns them as a collection of [EntityModel]s.
+     * @return A [CollectionModel] containing [EntityModel]s of all orders from the [orderService],
      * along with a self-referencing link.
      */
     @GetMapping("/orders")
@@ -44,7 +43,7 @@ class OrderController(
 
     /**
      * Endpoint for saving a [newOrder]. Converts the list of [OrderService.OrderItemRequest]s to
-     * a list of [OrderItem]s, and saves them to the [orderRepository] as a new [Order].
+     * a list of [OrderItem]s, and saves them to the [orderService] as a new [Order].
      * @param newOrder The list of [OrderService.OrderItemRequest]s to convert to a list of [OrderItem].
      * @return A [ResponseEntity] object with the saved [Order] in the response body
      * and a self-referencing link in the response header.
@@ -81,7 +80,7 @@ class OrderController(
     @PutMapping("/orders/{id}/complete")
     fun complete(@PathVariable id: Long): ResponseEntity<*> {
         val order = orderService.completeOrder(id)
-        return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
+        return ResponseEntity.ok(assembler.toModel(orderService.save(order)))
     }
 
     /**
@@ -93,6 +92,6 @@ class OrderController(
     @DeleteMapping("/orders/{id}/cancel")
     fun cancel(@PathVariable id: Long): ResponseEntity<*> {
         val order = orderService.cancelOrder(id)
-        return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
+        return ResponseEntity.ok(assembler.toModel(orderService.save(order)))
     }
 }
