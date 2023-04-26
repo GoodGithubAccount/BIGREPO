@@ -15,7 +15,7 @@ import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.OrderNotFoundException
 import java.util.stream.Collectors
-import project.github.backend.order.OrderService.NewOrder as NewOrder
+import project.github.backend.order.OrderService.NewOrder
 
 @RestController
 class OrderController(
