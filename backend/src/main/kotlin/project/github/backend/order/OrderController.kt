@@ -10,6 +10,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
+import project.github.backend.order.OrderModelAssembler.OrderJson
 import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.OrderNotFoundException
@@ -30,7 +31,7 @@ class OrderController(
      * along with a self-referencing link.
      */
     @GetMapping("/orders")
-    fun all(): CollectionModel<EntityModel<Order>> {
+    fun all(): CollectionModel<EntityModel<OrderJson>> {
         val ordersStream = orderService.getAllOrders().stream()
         val ordersAsEntityModel = ordersStream.map { order ->
             assembler.toModel(order)
@@ -52,11 +53,11 @@ class OrderController(
     @PostMapping("/orders")
     fun newOrder(@RequestBody newOrder: NewOrder): ResponseEntity<*> {
         val order = orderService.createOrder(newOrder)
-        val entityModel: EntityModel<Order> = assembler.toModel(order)
+        val entityModel: EntityModel<OrderJson> = assembler.toModel(order)
 
         log.info("Sending response: $order")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body<EntityModel<Order>>(entityModel)
+            .body<EntityModel<OrderJson>>(entityModel)
     }
 
     /**
@@ -66,7 +67,7 @@ class OrderController(
      * @throws OrderNotFoundException If no order with the specified [id] is found in the [OrderRepository].
      */
     @GetMapping("/orders/{id}")
-    fun getOrder(@PathVariable id: Long): EntityModel<Order> {
+    fun getOrder(@PathVariable id: Long): EntityModel<OrderJson> {
         val order = orderService.getOrder(id)
         return assembler.toModel(order)
     }
