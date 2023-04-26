@@ -6,7 +6,6 @@ import project.github.backend.product.Product
 import java.lang.IllegalStateException
 import java.util.*
 
-
 /**
  * The enum class representing the status of an [Order].
  * @property IN_PROGRESS The order is in progress.
@@ -33,7 +32,7 @@ class Order(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
         fetch = FetchType.EAGER
-    ) @JsonManagedReference @JsonIgnore var orderItems: List<OrderItem> = emptyList()
+    ) @JsonManagedReference var orderItems: List<OrderItem> = emptyList()
 ) {
 
     constructor(orderItems: List<OrderItem> = emptyList()) : this(null, Status.IN_PROGRESS) {
