@@ -67,6 +67,13 @@ class OrderService(
         orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
     /**
+     * Returns all [Order]s from the database.
+     */
+    fun getAllOrders(): List<Order> {
+        return orderRepository.findAll()
+    }
+
+    /**
      * Completes an [Order] in the database.
      * @param id the id of the [Order] to be completed.
      * @throws IllegalOrderCompletionException if the [Order] is already completed or cancelled.

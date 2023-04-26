@@ -31,7 +31,7 @@ class OrderController(
      */
     @GetMapping("/orders")
     fun all(): CollectionModel<EntityModel<Order>> {
-        val ordersStream = this.orderRepository.findAll().stream()
+        val ordersStream = orderService.getAllOrders().stream()
         val ordersAsEntityModel = ordersStream.map { order ->
             assembler.toModel(order)
         }.collect(Collectors.toList())
