@@ -74,32 +74,24 @@ class OrderController(
     /**
      * Endpoint for completing an [Order] by its [id].
      * @param id The ID of the order.
-     * @return An HTTP '200 OK' if completed, or if the order [Status] is already COMPLETED or CANCELLED a '405 METHOD_NOT_ALLOWED'.
+     * @return An HTTP '200 OK' if completed.
+     * @throws IllegalOrderCompletionException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @PutMapping("/orders/{id}/complete")
     fun complete(@PathVariable id: Long): ResponseEntity<*> {
-        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
-
-        if (order.getStatus() == Status.COMPLETED || order.getStatus() == Status.CANCELLED) {
-            throw IllegalOrderCompletionException(id, order.getStatus())
-        }
-        order.setStatus(Status.COMPLETED)
+        val order = orderService.completeOrder(id)
         return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
     }
 
     /**
      * Endpoint for cancelling an [Order] with the given [id].
      * @param id The ID of the order.
-     * @return An HTTP '200 OK' if cancelled, or if the order [Status] is already CANCELLED or COMPLETED a '405 METHOD_NOT_ALLOWED'.
+     * @return An HTTP '200 OK' if cancelled.
+     * @throws IllegalOrderCancellationException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @DeleteMapping("/orders/{id}/cancel")
     fun cancel(@PathVariable id: Long): ResponseEntity<*> {
-        val order = orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
-
-        if (order.getStatus() == Status.CANCELLED || order.getStatus() == Status.COMPLETED) {
-            throw IllegalOrderCancellationException(id, order.getStatus())
-        }
-        order.setStatus(Status.CANCELLED)
+        val order = orderService.cancelOrder(id)
         return ResponseEntity.ok(assembler.toModel(orderRepository.save(order)))
     }
 }

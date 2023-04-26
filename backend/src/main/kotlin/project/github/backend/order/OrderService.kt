@@ -2,6 +2,8 @@ package project.github.backend.order
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import project.github.backend.order.exceptions.IllegalOrderCancellationException
+import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.IllegalDuplicateProductException
 import project.github.backend.order.exceptions.OrderNotFoundException
 import project.github.backend.product.ProductNotFoundException
@@ -64,4 +66,33 @@ class OrderService(
     fun getOrder(id: Long): Order =
         orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
 
+    /**
+     * Completes an [Order] in the database.
+     * @param id the id of the [Order] to be completed.
+     * @throws IllegalOrderCompletionException if the [Order] is already completed or cancelled.
+     */
+    fun completeOrder(id: Long): Order {
+        val order = getOrder(id)
+
+        if (order.getStatus() == Status.COMPLETED || order.getStatus() == Status.CANCELLED) {
+            throw IllegalOrderCompletionException(id, order.getStatus())
+        }
+        order.setStatus(Status.COMPLETED)
+        return order
+    }
+
+    /**
+     * Cancels an [Order] in the database.
+     * @param id the id of the [Order] to be cancelled.
+     * @throws IllegalOrderCancellationException if the [Order] is already cancelled or completed.
+     */
+    fun cancelOrder(id: Long): Order {
+        val order = getOrder(id)
+
+        if (order.getStatus() == Status.CANCELLED || order.getStatus() == Status.COMPLETED) {
+            throw IllegalOrderCancellationException(id, order.getStatus())
+        }
+        order.setStatus(Status.CANCELLED)
+        return order
+    }
 }
