@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import './index.css';
+import route from "./Components/Route";
 import ShoppingHandler from './ShoppingHandler';
 
 function App() {
