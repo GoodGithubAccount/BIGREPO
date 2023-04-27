@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {type BasketItem} from './BasketProvider';
+import {type BasketItem} from '../basket/BasketProvider';
 
 type OrderFormProps = {
 	basket: any[];

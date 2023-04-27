@@ -1,6 +1,6 @@
 import React from 'react';
-import ItemView from './ItemView';
-import {GetItemBasket} from './BasketView';
+import ItemView from './products/ItemView';
+import {GetItemBasket} from './basket/BasketView';
 
 export const GridContainer: React.FC = () => {
 	return (

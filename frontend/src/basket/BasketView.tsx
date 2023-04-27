@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {BasketContext} from './BasketProvider';
-import {OrderForm} from './OrderForm';
+import {OrderForm} from '../orderForm/OrderForm';
 import {BasketItem} from './BasketItem';
 
 export const GetItemBasket = () => {

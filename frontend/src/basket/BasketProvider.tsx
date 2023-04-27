@@ -1,5 +1,5 @@
 import React, {createContext, type ReactNode, useState} from 'react';
-import {type Product} from './Item';
+import {type Product} from '../products/Item';
 
 export type BasketItem = {
 	products: Product;

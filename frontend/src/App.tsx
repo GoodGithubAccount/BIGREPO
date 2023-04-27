@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import './index.css';
-import {BasketProvider} from './BasketProvider';
+import {BasketProvider} from './basket/BasketProvider';
 import {GridContainer} from './GridContainer';
 
 function App() {
