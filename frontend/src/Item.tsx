@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {BasketContext} from './ShoppingHandler';
+import {BasketContext} from './BasketProvider';
 import './Item.css';
 
 export type Product = {

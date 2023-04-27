@@ -1,7 +1,5 @@
-import React, {createContext, useState} from 'react';
-import ItemCreate, {type Product} from './Item';
-import {GetItemBasket} from './BasketView';
-import ItemView from './ItemView';
+import React, {createContext, type ReactNode, useState} from 'react';
+import {type Product} from './Item';
 
 export type BasketItem = {
 	products: Product;
@@ -24,7 +22,10 @@ export const BasketContext = createContext({
 	},
 });
 
-const ShoppingHandler = () => {
+type BasketProviderProps = {
+	children: ReactNode;
+};
+export const BasketProvider: React.FC<BasketProviderProps> = ({children}) => {
 	const [basket, setBasket] = useState<BasketItem[]>([]);
 
 	const addToBasket = (item: Product) => {
@@ -61,21 +62,16 @@ const ShoppingHandler = () => {
 	};
 
 	return (
-		<BasketContext.Provider value={{basket, addToBasket, removeFromBasket, basketAdder, basketSubber}}>
-			<div className='grid-container'>
-
-				<div className='items'>
-					<ItemView/>
-				</div>
-
-				<div className='basket'>
-					<GetItemBasket/>
-				</div>
-
-			</div>
-
+		<BasketContext.Provider
+			value={{
+				basket,
+				addToBasket,
+				removeFromBasket,
+				basketAdder,
+				basketSubber,
+			}}
+		>
+			{children}
 		</BasketContext.Provider>
 	);
 };
-
-export default ShoppingHandler;
