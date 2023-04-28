@@ -2,12 +2,9 @@ package project.github.backend.order
 
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.server.RepresentationModelAssembler
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*
 import org.springframework.stereotype.Component
-import project.github.backend.order.OrderModelAssembler.*
-import project.github.backend.product.Product
-import project.github.backend.product.ProductController
+import project.github.backend.basket.BasketController
 
 /**
  * A [RepresentationModelAssembler] implementation that converts the domain type [Order] object
@@ -16,7 +13,7 @@ import project.github.backend.product.ProductController
  * The class is marked as [Component] and will automatically be created on startup.
  */
 @Component
-class OrderModelAssembler : RepresentationModelAssembler<Order, EntityModel<OrderJson>> {
+class OrderModelAssembler : RepresentationModelAssembler<Order, EntityModel<Order>> {
 
     /**
      * Converts the [Order] object into its [EntityModel] representation.
@@ -30,31 +27,17 @@ class OrderModelAssembler : RepresentationModelAssembler<Order, EntityModel<Orde
             EntityModel.of(OrderItemJson(orderItem.id!!, orderItem.product, orderItem.quantity, mapOf("product" to orderItemLinks)))
         }
 
-        val orderLinks = mutableMapOf(
-            "self" to linkTo(methodOn(OrderController::class.java).getOrder(order.id!!)).withSelfRel(),
-        )
+private fun EntityModel<Order>.addSelfRel() {
+    val orderId = this.content!!.id!!
 
-        if (order.getStatus() == Status.IN_PROGRESS) {
-            orderLinks["cancel"] = linkTo(methodOn(OrderController::class.java).cancel(order.id)).withRel("cancel")
-            orderLinks["complete"] = linkTo(methodOn(OrderController::class.java).complete(order.id)).withRel("complete")
-        }
+    val controllerClass = OrderController::class.java
 
-        val orderJson = OrderJson(order.id, order.getStatus().name, orderItemsWithLinks, orderLinks)
+    // with affordance to createOrder method
+    add(linkTo(methodOn(OrderController::class.java).getOrder(orderId)).withSelfRel()
+        .andAffordance(afford(methodOn(controllerClass).createOrder(null))))
+}
 
-        return EntityModel.of(orderJson)
-    }
-
-    data class OrderJson(
-        val id: Long,
-        val status: String,
-        val orderItems: List<EntityModel<OrderItemJson>>,
-        val _links: Map<String, Any>
-    )
-
-    data class OrderItemJson(
-        val id: Long,
-        val product: Product,
-        val quantity: Int,
-        val _links: Map<String, Any>
-    )
+private fun EntityModel<Order>.addBasketRel() {
+    val basketId = this.content!!.basket.id!!
+    add(linkTo(methodOn(BasketController::class.java).getBasket(basketId)).withRel("basket"))
 }

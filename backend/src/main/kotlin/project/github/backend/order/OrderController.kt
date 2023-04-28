@@ -4,59 +4,53 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
-import org.springframework.hateoas.IanaLinkRelations
+import org.springframework.hateoas.server.ExposesResourceFor
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
-import project.github.backend.order.OrderModelAssembler.OrderJson
 import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.OrderNotFoundException
 import java.util.stream.Collectors
-import project.github.backend.order.OrderService.NewOrder
 
 @RestController
+@ExposesResourceFor(Order::class)
+@RequestMapping("/orders")
 class OrderController(
     private val orderService: OrderService,
-    val assembler: OrderModelAssembler
+    val assembler: OrderModelAssembler,
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
 
+
     /**
-     * Endpoint for retrieving all [Order]s from the [orderService] and returns them as a collection of [EntityModel]s.
-     * @return A [CollectionModel] containing [EntityModel]s of all orders from the [orderService],
-     * along with a self-referencing link.
+     * TODO KDoc
      */
-    @GetMapping("/orders")
-    fun all(): CollectionModel<EntityModel<OrderJson>> {
+    @GetMapping
+    fun orders(): CollectionModel<*> {
         val ordersStream = orderService.getAllOrders().stream()
         val ordersAsEntityModel = ordersStream.map { order ->
             assembler.toModel(order)
         }.collect(Collectors.toList())
 
         return CollectionModel.of(
-            ordersAsEntityModel, linkTo(methodOn(OrderController::class.java).all()).withSelfRel()
+            ordersAsEntityModel, linkTo(methodOn(OrderController::class.java).orders()).withSelfRel()
         )
     }
 
     /**
-     * Endpoint for saving a [newOrder]. Converts the list of [OrderService.OrderItemRequest]s to
-     * a list of [OrderItem]s, and saves them to the [orderService] as a new [Order].
-     * @param newOrder The list of [OrderService.OrderItemRequest]s to convert to a list of [OrderItem].
-     * @return A [ResponseEntity] object with the saved [Order] in the response body
-     * and a self-referencing link in the response header.
-     * The response status code is 201 CREATED.
+     * TODO add 201 created instead of 200 OK
+     * TODO KDoc
      */
-    @PostMapping("/orders")
-    fun newOrder(@RequestBody newOrder: NewOrder): ResponseEntity<*> {
-        val order = orderService.createOrder(newOrder)
-        val entityModel: EntityModel<OrderJson> = assembler.toModel(order)
+    @PostMapping
+    fun createOrder(@RequestBody payload: OrderRepresentation?): ResponseEntity<*> {
+        val order = orderService.createOrder(payload!!)
+        val model = assembler.toModel(order)
 
-        log.info("Sending response: $order")
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body<EntityModel<OrderJson>>(entityModel)
+        //TODO return the created order with a created http code
+        return ResponseEntity.ok(model)
     }
 
     /**
@@ -65,8 +59,8 @@ class OrderController(
      * @return An [EntityModel] containing the details of the retrieved product.
      * @throws OrderNotFoundException If no order with the specified [id] is found in the [OrderRepository].
      */
-    @GetMapping("/orders/{id}")
-    fun getOrder(@PathVariable id: Long): EntityModel<OrderJson> {
+    @GetMapping("/{id}")
+    fun getOrder(@PathVariable id: Long): EntityModel<Order> {
         val order = orderService.getOrder(id)
         return assembler.toModel(order)
     }
@@ -77,7 +71,7 @@ class OrderController(
      * @return An HTTP '200 OK' if completed.
      * @throws IllegalOrderCompletionException If the order [Status] is already COMPLETED or CANCELLED.
      */
-    @PutMapping("/orders/{id}/complete")
+    @PutMapping("/{id}/complete")
     fun complete(@PathVariable id: Long): ResponseEntity<*> {
         val order = orderService.completeOrder(id)
         return ResponseEntity.ok(assembler.toModel(orderService.save(order)))
@@ -89,7 +83,7 @@ class OrderController(
      * @return An HTTP '200 OK' if cancelled.
      * @throws IllegalOrderCancellationException If the order [Status] is already COMPLETED or CANCELLED.
      */
-    @DeleteMapping("/orders/{id}/cancel")
+    @DeleteMapping("/{id}/cancel")
     fun cancel(@PathVariable id: Long): ResponseEntity<*> {
         val order = orderService.cancelOrder(id)
         return ResponseEntity.ok(assembler.toModel(orderService.save(order)))

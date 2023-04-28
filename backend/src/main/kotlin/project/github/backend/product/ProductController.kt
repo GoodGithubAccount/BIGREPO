@@ -97,7 +97,7 @@ class ProductController(private val repository: ProductRepository, private val a
                 updateProductFrom(it, newProduct)
                 repository.save(it)
             }.orElseGet {
-                newProduct.setId(id)
+                newProduct.id = id
                 repository.save(newProduct)
             }
 
@@ -111,12 +111,12 @@ class ProductController(private val repository: ProductRepository, private val a
      * Updates all [Product] fields from the [existingProduct] to the [newProduct].
      */
     private fun updateProductFrom(existingProduct: Product, newProduct: Product) {
-        existingProduct.setName(newProduct.getName())
-        existingProduct.setPrice(newProduct.getPrice())
-        existingProduct.setCurrency(newProduct.getCurrency())
-        existingProduct.setRebateQuantity(newProduct.getRebateQuantity())
-        existingProduct.setRebatePercent(newProduct.getRebatePercent())
-        existingProduct.setUpsellProduct(newProduct.getUpsellProduct())
+        existingProduct.name = newProduct.name
+        existingProduct.price = newProduct.price
+        existingProduct.currency = newProduct.currency
+        existingProduct.rebateQuantity = newProduct.rebateQuantity
+        existingProduct.rebatePercent = newProduct.rebatePercent
+        existingProduct.upsellProduct = newProduct.upsellProduct
     }
 
     /**

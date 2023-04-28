@@ -2,75 +2,74 @@ package project.github.backend.order
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import project.github.backend.basket.Basket
+import project.github.backend.basket.BasketProduct
 import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.IllegalDuplicateProductException
 import project.github.backend.order.exceptions.OrderNotFoundException
 import project.github.backend.product.ProductNotFoundException
 import project.github.backend.product.ProductRepository
-import project.github.backend.product.Product
+import java.math.BigDecimal
 
 /**
  * Service that provides order related operations.
  */
 @Service
 class OrderService(
-    private val productRepository: ProductRepository,
-    private val orderRepository: OrderRepository
+    private val productRepository: ProductRepository, private val orderRepository: OrderRepository
 ) {
     /**
-     * Creates an [Order] and saves it to the database.
-     * @param newOrder the list of items with their quantities to be ordered.
-     * @throws IllegalDuplicateProductException if the same [Product] is ordered twice.
-     * @throws ProductNotFoundException if a product in the [OrderService.NewOrder] is not found.
+     * TODO KDoc
      */
     @Transactional
-    fun createOrder(newOrder: NewOrder): Order {
-        val productIds = mutableSetOf<String>()
+    fun createOrder(payload: OrderRepresentation): Order {
+        val basketProducts = constructBasketProducts(payload)
 
-        val orderItems = newOrder.items.map { orderItemRequest ->
-            val productId = orderItemRequest.productId
+        val basket = Basket(
+            products = basketProducts, numberOfProducts = basketProducts.count(), currency = payload.currency!!
+        )
+        val order = constructOrder(basket, basketProducts)
 
-            if (productIds.contains(productId)) {
-                throw IllegalDuplicateProductException(productId)
-            }
-
-            val product = productRepository.findById(productId)
-                .orElseThrow { ProductNotFoundException(productId) }
-
-            productIds.add(productId)
-
-            OrderItem(product = product, quantity = orderItemRequest.quantity)
-        }
-
-        val order = Order(orderItems = orderItems)
-        order.setStatus(Status.IN_PROGRESS)
-
-        println("saving order $order")
         return orderRepository.save(order)
     }
 
-    data class OrderItemRequest(
-        val productId: String, val quantity: Int
-    )
+    private fun constructOrder(basket: Basket, basketProducts: List<BasketProduct>): Order {
+        return Order(
+            basket = basket,
+            totalPrice = getTotalPrice(basketProducts),
+            currency = basket.currency,
+            status = Status.IN_PROGRESS
+        )
+    }
 
-    data class NewOrder(
-        val items: List<OrderItemRequest>
-    )
+    private fun getTotalPrice(basketProducts: List<BasketProduct>): BigDecimal {
+        return basketProducts.stream().map { basketProduct ->
+            basketProduct.price * basketProduct.quantity.toBigDecimal()
+        }.reduce { a, b -> a + b }.get()
+    }
 
-    /**
-     * Returns an [Order] from the database by its id.
-     * @param id the id of the [Order].
-     * @throws OrderNotFoundException if the [Order] is not found.
-     */
-    fun getOrder(id: Long): Order =
-        orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
+    private fun constructBasketProducts(payload: OrderRepresentation): List<BasketProduct> {
+        val productIds = mutableSetOf<String>()
 
-    /**
-     * Returns all [Order]s from the database.
-     */
-    fun getAllOrders(): List<Order> {
-        return orderRepository.findAll()
+        return payload.products!!.map { product ->
+            val id = product.key
+            val quantity = product.value
+
+            val foundProduct = productRepository.findById(id).orElseThrow { ProductNotFoundException(id) }
+
+            if (productIds.contains(id)) {
+                throw IllegalDuplicateProductException(id)
+            }
+
+            productIds.add(id)
+
+            BasketProduct(
+                productId = id,
+                quantity = quantity,
+                price = foundProduct.price.toBigDecimal(),
+            )
+        }
     }
 
     /**
@@ -81,10 +80,10 @@ class OrderService(
     fun completeOrder(id: Long): Order {
         val order = getOrder(id)
 
-        if (order.getStatus() == Status.COMPLETED || order.getStatus() == Status.CANCELLED) {
-            throw IllegalOrderCompletionException(id, order.getStatus())
+        if (order.status == Status.COMPLETED || order.status == Status.CANCELLED) {
+            throw IllegalOrderCompletionException(id, order.status)
         }
-        order.setStatus(Status.COMPLETED)
+        order.status = Status.COMPLETED
         return order
     }
 
@@ -96,10 +95,10 @@ class OrderService(
     fun cancelOrder(id: Long): Order {
         val order = getOrder(id)
 
-        if (order.getStatus() == Status.CANCELLED || order.getStatus() == Status.COMPLETED) {
-            throw IllegalOrderCancellationException(id, order.getStatus())
+        if (order.status == Status.CANCELLED || order.status == Status.COMPLETED) {
+            throw IllegalOrderCancellationException(id, order.status)
         }
-        order.setStatus(Status.CANCELLED)
+        order.status = Status.CANCELLED
         return order
     }
 
@@ -110,5 +109,13 @@ class OrderService(
      */
     fun save(order: Order): Order {
         return orderRepository.save(order)
+    }
+
+    fun getOrder(id: Long): Order {
+        return orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
+    }
+
+    fun getAllOrders(): List<Order> {
+        return orderRepository.findAll()
     }
 }
