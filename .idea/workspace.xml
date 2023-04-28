@@ -4,16 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d326542-a57a-4bf3-8e16-ca311ac50d2f" name="Changes" comment="Anna commit 3: Style og layout&#10;Lavet overskrift&#10;Styling af overskrift&#10;Navn nederst på side&#10;Opsætning og afstande&#10;Farver">
+    <list default="true" id="7f334ff6-e002-40d1-ad4d-e7bb383801df" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/Pages.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/Pages/ItemPage.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/Pages/TestPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/ItemView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/ItemView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/Components/Route.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/Components/Route.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -31,24 +40,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\annae\\WebstormProjects\\BIGREPO\\frontend\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "C:\\Users\\mads2\\GitHub\\BIGREPO\\frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mads2\GitHub\BIGREPO\frontend\src\Components" />
+      <recent name="C:\Users\mads2\GitHub\BIGREPO\frontend\src\Pages" />
+      <recent name="C:\Users\mads2\GitHub\BIGREPO\frontend\src" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0d326542-a57a-4bf3-8e16-ca311ac50d2f" name="Changes" comment="" />
+      <changelist id="7f334ff6-e002-40d1-ad4d-e7bb383801df" name="Changes" comment="" />
       <created>1678114010145</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -57,6 +74,7 @@
       <workItem from="1678351581816" duration="6792000" />
       <workItem from="1679322026212" duration="607000" />
       <workItem from="1679322663864" duration="21385000" />
+      <workItem from="1682667021384" duration="5456000" />
     </task>
     <task id="LOCAL-00001" summary="test af commit">
       <created>1679324117882</created>

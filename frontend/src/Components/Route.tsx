@@ -1,21 +1,34 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
+import Pages from '../Pages';
 
-const CheckoutFlow = () => {
+const Route = () => {
 	const [step, setStep] = useState(1);
+	const NotFound = () => <h2>404 Not Found</h2>;
 
 	useEffect(() => {
 		const onPopState = (event: PopStateEvent) => {
-			if (event.state && event.state.step) {
+			if (event.state?.step) {
 				setStep(event.state.step);
 			}
 		};
 
 		window.addEventListener('popstate', onPopState);
+
+		// Handle page reloads
+		const currentStep = parseInt(window.location.pathname.replace('/step', ''), 10);
+		if (!isNaN(currentStep) && currentStep >= 1 && currentStep <= Object.keys(Pages).length) {
+			setStep(currentStep);
+		}
+
 		return () => {
 			window.removeEventListener('popstate', onPopState);
 		};
 	}, []);
+
+	useEffect(() => {
+		document.title = `Step ${step} - Checkout Flow`;
+	}, [step]);
 
 	const handleNext = () => {
 		const nextStep = step + 1;
@@ -29,24 +42,23 @@ const CheckoutFlow = () => {
 		window.history.pushState({step: prevStep}, '', `/step${prevStep}`);
 	};
 
+	const Page = Pages[step] || NotFound;
+
 	return (
 		<div>
-			{step === 1 && <h2>Home</h2>}
-			{step === 2 && <h2>Step 1</h2>}
-			{step === 3 && <h2>Step 2</h2>}
-			{step === 4 && <h2>Step 3</h2>}
+			<Page />
 			{step > 1 && (
 				<button onClick={handleBack}>
-                    Back
+					Back
 				</button>
 			)}
-			{step < 4 && (
+			{step < Object.keys(Pages).length && (
 				<button onClick={handleNext}>
-                    Next
+					Next
 				</button>
 			)}
 		</div>
 	);
 };
 
-export default CheckoutFlow;
+export default Route;
