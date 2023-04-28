@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f334ff6-e002-40d1-ad4d-e7bb383801df" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/Pages.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/Pages/ItemPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/Pages/TestPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/Components/Route.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/Components/Route.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="7f334ff6-e002-40d1-ad4d-e7bb383801df" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -74,7 +67,7 @@
       <workItem from="1678351581816" duration="6792000" />
       <workItem from="1679322026212" duration="607000" />
       <workItem from="1679322663864" duration="21385000" />
-      <workItem from="1682667021384" duration="5456000" />
+      <workItem from="1682667021384" duration="5774000" />
     </task>
     <task id="LOCAL-00001" summary="test af commit">
       <created>1679324117882</created>
