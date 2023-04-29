@@ -12,6 +12,24 @@ class ProductService(
 
     /**
      * Saves a [Product] to the database.
+     * @param product the [Product] to be saved in the form of a [ProductRepresentation].
+     * @return the saved [Product].
+     */
+    fun save(product: ProductRepresentation): Product {
+        val newProduct = Product(
+            id = product.id!!,
+            name = product.name!!,
+            price = product.price!!.toInt(),
+            currency = product.currency!!,
+            rebateQuantity = product.rebateQuantity!!,
+            rebatePercent = product.rebatePercent!!.toInt(),
+            upsellProduct = product.upsellProductId!!
+            )
+        return save(newProduct)
+    }
+
+    /**
+     * Saves a [Product] to the database.
      * @param product the [Product] to be saved.
      * @return the saved [Product].
      */
@@ -33,13 +51,13 @@ class ProductService(
      * @param  newProduct the [Product] with the new values.
      * @return the updated [Product].
      */
-    fun updateProduct(existingProduct: Product, newProduct: Product) {
-        existingProduct.name = newProduct.name
-        existingProduct.price = newProduct.price
-        existingProduct.currency = newProduct.currency
-        existingProduct.rebateQuantity = newProduct.rebateQuantity
-        existingProduct.rebatePercent = newProduct.rebatePercent
-        existingProduct.upsellProduct = newProduct.upsellProduct
+    fun updateProduct(existingProduct: Product, newProduct: ProductRepresentation) {
+        existingProduct.name = newProduct.name!!
+        existingProduct.price = newProduct.price!!.toInt()
+        existingProduct.currency = newProduct.currency!!
+        existingProduct.rebateQuantity = newProduct.rebateQuantity!!
+        existingProduct.rebatePercent = newProduct.rebatePercent!!.toInt()
+        existingProduct.upsellProduct = newProduct.upsellProductId!!
     }
 
     /**

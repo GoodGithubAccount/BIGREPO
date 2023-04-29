@@ -46,7 +46,7 @@ class ProductController(
      * The response status code is 201 (Created).
      */
     @PostMapping()
-    fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
+    fun newProduct(@RequestBody newProduct: ProductRepresentation): ResponseEntity<*> {
         val entityModel: EntityModel<Product> = this.assembler.toModel(this.productService.save(newProduct))
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Product>>(entityModel)
@@ -80,7 +80,7 @@ class ProductController(
      * @return An HTTP 201 Created with the updated product as an EntityModel in the body.
      */
     @PutMapping("/{id}")
-    fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
+    fun replaceProduct(@RequestBody newProduct: ProductRepresentation, @PathVariable id: String): ResponseEntity<*> {
         val updatedProduct = this.productService.getProduct(id).also {
             this.productService.updateProduct(it, newProduct)
             this.productService.save(it)
