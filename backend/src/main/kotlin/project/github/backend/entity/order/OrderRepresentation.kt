@@ -4,10 +4,9 @@ import org.springframework.hateoas.RepresentationModel
 
 
 /**
- * TODO
+ * The [RepresentationModel] of an [Order].
+ * It is the form in which the client uses to create an order.
  */
 class OrderRepresentation : RepresentationModel<OrderRepresentation>() {
-    val currency: String? = null
-    val status: Status? = null
-    val products: Map<String, Int>? = null
+    var products: Map<String, Int>? = null
 }
