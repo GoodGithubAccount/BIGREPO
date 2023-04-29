@@ -22,4 +22,5 @@ data class Order(
     @OneToOne(cascade = [CascadeType.ALL]) @JsonIgnore val basket: Basket, //TODO add HREF link
     val totalPrice: BigDecimal,
     var status: Status,
+    val currency: String
 )

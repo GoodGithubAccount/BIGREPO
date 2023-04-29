@@ -5,11 +5,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import project.github.backend.basket.Basket
-import project.github.backend.basketproduct.BasketProduct
-import project.github.backend.order.*
-import project.github.backend.product.Product
-import project.github.backend.product.ProductRepository
+import project.github.backend.entity.basket.Basket
+import project.github.backend.entity.basketproduct.BasketProduct
+import project.github.backend.entity.order.Order
+import project.github.backend.entity.order.OrderRepository
+import project.github.backend.entity.order.OrderService
+import project.github.backend.entity.order.Status
+import project.github.backend.entity.product.Product
+import project.github.backend.entity.product.ProductRepository
 
 /**
  * This class initializes the database.
@@ -53,7 +56,9 @@ class LoadDatabase {
                 numberOfProducts = 1,
             ),
             totalPrice = (p1.price * 2).toBigDecimal(),
-            status = Status.IN_PROGRESS
+            status = Status.IN_PROGRESS,
+            currency = "DKK"
+
         )
         val o2 = Order(
             basket = Basket(
@@ -68,7 +73,8 @@ class LoadDatabase {
                 numberOfProducts = 1,
             ),
             totalPrice = (p1.price * 2).toBigDecimal(),
-            status = Status.IN_PROGRESS
+            status = Status.IN_PROGRESS,
+            currency = "DKK"
         )
 
         log.info("Preloading " + productRepository.save(p1))

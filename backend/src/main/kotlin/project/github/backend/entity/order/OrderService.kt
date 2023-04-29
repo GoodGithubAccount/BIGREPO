@@ -30,8 +30,9 @@ class OrderService(
     }
 
     private fun constructOrder(basket: Basket): Order {
+        //TODO determine currency based on basket
         return Order(
-            basket = basket, totalPrice = basketService.getTotalPrice(basket.id!!), status = Status.IN_PROGRESS
+            basket = basket, totalPrice = basketService.getTotalPrice(basket.id!!), status = Status.IN_PROGRESS, currency = "DKK"
         )
     }
 
