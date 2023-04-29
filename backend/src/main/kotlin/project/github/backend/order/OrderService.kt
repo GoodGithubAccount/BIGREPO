@@ -74,10 +74,20 @@ class OrderService(
         return orderRepository.save(order)
     }
 
+    /**
+     * Fetches an [Order] from the database.
+     * @param id the id of the [Order] to be fetched.
+     * @return the fetched [Order].
+     * @throws OrderNotFoundException if the [Order] is not found.
+     */
     fun getOrder(id: Long): Order {
         return orderRepository.findById(id).orElseThrow { OrderNotFoundException(id) }
     }
 
+    /**
+     * Fetches all [Order]s from the database.
+     * @return the fetched [Order]s.
+     */
     fun getAllOrders(): List<Order> {
         return orderRepository.findAll()
     }
