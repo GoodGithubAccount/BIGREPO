@@ -26,11 +26,7 @@ class OrderServiceTest {
     private val basket = Basket(id = 1L, products = emptyList(), numberOfProducts = products.size)
     private val totalPrice = BigDecimal(300)
     private val order = Order(
-        id = orderId,
-        basket = basket,
-        totalPrice = totalPrice,
-        status = Status.IN_PROGRESS,
-        currency = "DKK"
+        id = orderId, basket = basket, totalPrice = totalPrice, status = Status.IN_PROGRESS, currency = "DKK"
     )
 
     @BeforeEach
