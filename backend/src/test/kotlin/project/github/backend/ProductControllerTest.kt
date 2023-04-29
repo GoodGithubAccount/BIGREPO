@@ -67,8 +67,8 @@ class ProductControllerTest(
 
         val savedProduct = repository.findById(productId).get()
 
-        assertThat(savedProduct.getName()).isEqualTo(newName)
-        assertThat(savedProduct.getId()).isNotEqualTo(randomId)
+        assertThat(savedProduct.name).isEqualTo(newName)
+        assertThat(savedProduct.id).isNotEqualTo(randomId)
     }
 
     @Test
@@ -159,7 +159,7 @@ class ProductControllerTest(
         postProductForObject(stringUpsellProduct)
 
         val product = repository.findById(stringUpsellId).get()
-        assertThat(product.getUpsellProduct()).isEqualTo(upsellString)
+        assertThat(product.upsellProduct).isEqualTo(upsellString)
     }
 
     @DirtiesContext
@@ -179,7 +179,7 @@ class ProductControllerTest(
         postProductForObject(nullUpsellProduct)
 
         val product = repository.findById(nullUpsellId).get()
-        assertThat(product.getUpsellProduct()).isNull()
+        assertThat(product.upsellProduct).isNull()
     }
 
     @DirtiesContext
