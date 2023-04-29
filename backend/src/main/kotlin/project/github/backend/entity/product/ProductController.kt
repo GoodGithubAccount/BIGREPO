@@ -16,6 +16,7 @@ import java.util.stream.Collectors
  * @param productService The [ProductService] instance used to perform CRUD operations on [Product] entities.
  */
 @RestController
+@RequestMapping("/products")
 class ProductController(
     private val assembler: ProductModelAssembler, private val productService: ProductService
 ) {
@@ -25,7 +26,7 @@ class ProductController(
      * @return A [CollectionModel] containing [EntityModel]s of all products in the database,
      * along with a self-referencing link.
      */
-    @GetMapping("/products")
+    @GetMapping()
     fun all(): CollectionModel<EntityModel<Product>> {
         val productsStream = this.productService.getAllProducts().stream()
         val productsAsEntityModels = productsStream.map { product ->
@@ -44,7 +45,7 @@ class ProductController(
      * and a self-referencing link in the response header.
      * The response status code is 201 (Created).
      */
-    @PostMapping("/products")
+    @PostMapping()
     fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
         val entityModel: EntityModel<Product> = this.assembler.toModel(this.productService.save(newProduct))
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -56,7 +57,7 @@ class ProductController(
      * @param id The ID of the product to retrieve.
      * @return An [EntityModel] containing the details of the retrieved product.
      */
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     fun getProduct(@PathVariable id: String): EntityModel<Product> {
         val product = this.productService.getProduct(id)
         return convertToEntityModel(product)
@@ -78,7 +79,7 @@ class ProductController(
      * @param id The ID of the product to update.
      * @return An HTTP 201 Created with the updated product as an EntityModel in the body.
      */
-    @PutMapping("/products/{id}")
+    @PutMapping("/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
         val updatedProduct = this.productService.getProduct(id).also {
             this.productService.updateProduct(it, newProduct)
@@ -94,7 +95,7 @@ class ProductController(
      * @param id The id of the product
      * @return An HTTP 204 No Content response
      */
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/{id}")
     fun deleteProduct(@PathVariable id: String): ResponseEntity<*> {
         this.productService.delete(id)
         return ResponseEntity.noContent().build<Any>()
