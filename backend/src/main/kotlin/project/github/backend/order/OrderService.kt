@@ -3,73 +3,36 @@ package project.github.backend.order
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import project.github.backend.basket.Basket
-import project.github.backend.basketproduct.BasketProduct
+import project.github.backend.basket.BasketService
 import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
-import project.github.backend.order.exceptions.IllegalDuplicateProductException
 import project.github.backend.order.exceptions.OrderNotFoundException
-import project.github.backend.product.ProductNotFoundException
-import project.github.backend.product.ProductRepository
-import java.math.BigDecimal
 
 /**
- * Service that provides order related operations.
+ * Service that provides [Order] related operations with the database.
  */
 @Service
 class OrderService(
-    private val productRepository: ProductRepository, private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository, private val basketService: BasketService
 ) {
     /**
-     * TODO KDoc
+     * Creates an [Order] in the database.
+     * @param payload the [OrderRepresentation] containing the [Basket] products.
      */
     @Transactional
     fun createOrder(payload: OrderRepresentation): Order {
-        val basketProducts = constructBasketProducts(payload)
+        val basketProducts = payload.products!!
 
-        val basket = Basket(
-            products = basketProducts, numberOfProducts = basketProducts.count(), currency = payload.currency!!
-        )
-        val order = constructOrder(basket, basketProducts)
+        val basket = basketService.createBasket(basketProducts)
+        val order = constructOrder(basket)
 
         return orderRepository.save(order)
     }
 
-    private fun constructOrder(basket: Basket, basketProducts: List<BasketProduct>): Order {
+    private fun constructOrder(basket: Basket): Order {
         return Order(
-            basket = basket,
-            totalPrice = getTotalPrice(basketProducts),
-            currency = basket.currency,
-            status = Status.IN_PROGRESS
+            basket = basket, totalPrice = basketService.getTotalPrice(basket.id!!), status = Status.IN_PROGRESS
         )
-    }
-
-    private fun getTotalPrice(basketProducts: List<BasketProduct>): BigDecimal {
-        return basketProducts.stream().map { basketProduct ->
-            basketProduct.price * basketProduct.quantity.toBigDecimal()
-        }.reduce { a, b -> a + b }.get()
-    }
-
-    private fun constructBasketProducts(payload: OrderRepresentation): List<BasketProduct> {
-        val productIds = mutableSetOf<String>()
-
-        return payload.products!!.map { product ->
-            val id = product.key
-            val quantity = product.value
-
-            val foundProduct = productRepository.findById(id).orElseThrow { ProductNotFoundException(id) }
-
-            if (productIds.contains(id)) {
-                throw IllegalDuplicateProductException(id)
-            }
-
-            productIds.add(id)
-
-            BasketProduct(
-                productId = id,
-                quantity = quantity,
-                price = foundProduct.price.toBigDecimal(),
-            )
-        }
     }
 
     /**
