@@ -3,7 +3,7 @@ package project.github.backend.order
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import project.github.backend.basket.Basket
-import project.github.backend.basket.BasketProduct
+import project.github.backend.basketproduct.BasketProduct
 import project.github.backend.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.order.exceptions.IllegalDuplicateProductException

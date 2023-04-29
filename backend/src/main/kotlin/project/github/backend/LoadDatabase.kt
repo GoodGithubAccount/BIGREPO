@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import project.github.backend.basket.Basket
-import project.github.backend.basket.BasketProduct
+import project.github.backend.basketproduct.BasketProduct
 import project.github.backend.order.*
 import project.github.backend.product.Product
 import project.github.backend.product.ProductRepository
