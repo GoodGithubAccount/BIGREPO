@@ -13,5 +13,4 @@ data class Basket(
     @Id @GeneratedValue @JsonIgnore val id: Long? = null,
     @OneToMany(cascade = [CascadeType.ALL]) val products: List<BasketProduct>, //TODO add HREF link
     val numberOfProducts: Int,
-    val currency: String
 )

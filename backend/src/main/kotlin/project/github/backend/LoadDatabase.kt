@@ -40,19 +40,19 @@ class LoadDatabase {
                     BasketProduct(
                         productId = p1.id,
                         quantity = 2,
-                        price = (p1.price).toBigDecimal()
+                        price = (p1.price).toBigDecimal(),
+                        currency = p1.currency
                     ),
                     BasketProduct(
                         productId = p2.id,
                         quantity = 3,
-                        price = (p2.price).toBigDecimal()
+                        price = (p2.price).toBigDecimal(),
+                        currency = p2.currency
                     )
                 ),
                 numberOfProducts = 1,
-                currency = "DKK"
             ),
             totalPrice = (p1.price * 2).toBigDecimal(),
-            currency = "DKK",
             status = Status.IN_PROGRESS
         )
         val o2 = Order(
@@ -61,14 +61,13 @@ class LoadDatabase {
                     BasketProduct(
                         productId = p1.id,
                         quantity = 5,
-                        price = (p1.price).toBigDecimal()
+                        price = (p1.price).toBigDecimal(),
+                        currency = p1.currency
                     )
                 ),
                 numberOfProducts = 1,
-                currency = "DKK"
             ),
             totalPrice = (p1.price * 2).toBigDecimal(),
-            currency = "DKK",
             status = Status.IN_PROGRESS
         )
 

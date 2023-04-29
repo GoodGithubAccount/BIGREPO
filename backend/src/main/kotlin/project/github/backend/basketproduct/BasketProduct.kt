@@ -12,4 +12,5 @@ data class BasketProduct(
     val productId: String,
     val quantity: Int,
     val price: BigDecimal,
+    val currency: String
 )
