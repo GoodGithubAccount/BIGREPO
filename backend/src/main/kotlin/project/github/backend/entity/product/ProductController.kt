@@ -12,20 +12,22 @@ import java.util.stream.Collectors
 /**
  * This class represents the [RestController] for handling HTTP requests related to [Product] entities.
  * It defines several endpoints for managing CRUD operations of the [Product] entities.
- * @param repository The [ProductRepository] instance used to interact with the data store.
  * @param assembler The [ProductModelAssembler] instance used to convert [Product] entities to [EntityModel]s.
+ * @param productService The [ProductService] instance used to perform CRUD operations on [Product] entities.
  */
 @RestController
-class ProductController(private val repository: ProductRepository, private val assembler: ProductModelAssembler) {
+class ProductController(
+    private val assembler: ProductModelAssembler, private val productService: ProductService
+) {
 
     /**
-     * Endpoint for Retrieving all [Product]s from the [repository] and returns them as a collection of [EntityModel]s.
-     * @return A [CollectionModel] containing [EntityModel]s of all products in the [repository],
+     * Endpoint for Retrieving all [Product]s from the database and returns them as a collection of [EntityModel]s.
+     * @return A [CollectionModel] containing [EntityModel]s of all products in the database,
      * along with a self-referencing link.
      */
     @GetMapping("/products")
     fun all(): CollectionModel<EntityModel<Product>> {
-        val productsStream = this.repository.findAll().stream()
+        val productsStream = this.productService.getAllProducts().stream()
         val productsAsEntityModels = productsStream.map { product ->
             convertToEntityModel(product)
         }.collect(Collectors.toList())
@@ -44,32 +46,21 @@ class ProductController(private val repository: ProductRepository, private val a
      */
     @PostMapping("/products")
     fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
-        val entityModel: EntityModel<Product> = assembler.toModel(repository.save(newProduct))
+        val entityModel: EntityModel<Product> = this.assembler.toModel(this.productService.save(newProduct))
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Product>>(entityModel)
     }
 
-
-    //Single items
-
     /**
-     * Endpoint for retrieving the details of a [Product] with the specified ID.
-     * @param id The ID of the [Product] to retrieve.
+     * Endpoint for retrieving the details of a [Product] with the [PathVariable] ID.
+     * @param id The ID of the product to retrieve.
      * @return An [EntityModel] containing the details of the retrieved product.
-     * @throws ProductNotFoundException If no product with the specified [id] is found in the [ProductRepository].
      */
     @GetMapping("/products/{id}")
     fun getProduct(@PathVariable id: String): EntityModel<Product> {
-        val product = findProductById(id).orElseThrow { ProductNotFoundException(id) }
+        val product = this.productService.getProduct(id)
         return convertToEntityModel(product)
     }
-
-    /**
-     * Finds a [Product] in the [repository] by its ID.
-     * @param id The ID of the product to find.
-     * @return The product with the specified ID if it exists, Optional#empty() otherwise.
-     */
-    private fun findProductById(id: String) = this.repository.findById(id)
 
     /**
      * Converts the non-model object [product] to the equivalent
@@ -89,28 +80,13 @@ class ProductController(private val repository: ProductRepository, private val a
      */
     @PutMapping("/products/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
-        val updatedProduct = findProductById(id).map {
-            updateProductFrom(it, newProduct)
-            repository.save(it)
-        }.orElseGet {
-            newProduct.id = id
-            repository.save(newProduct)
+        val updatedProduct = this.productService.getProduct(id).also {
+            this.productService.updateProduct(it, newProduct)
+            this.productService.save(it)
         }
 
         val entityModel = assembler.toModel(updatedProduct)
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
-    }
-
-    /**
-     * Updates all [Product] fields from the [existingProduct] to the [newProduct].
-     */
-    private fun updateProductFrom(existingProduct: Product, newProduct: Product) {
-        existingProduct.name = newProduct.name
-        existingProduct.price = newProduct.price
-        existingProduct.currency = newProduct.currency
-        existingProduct.rebateQuantity = newProduct.rebateQuantity
-        existingProduct.rebatePercent = newProduct.rebatePercent
-        existingProduct.upsellProduct = newProduct.upsellProduct
     }
 
     /**
@@ -120,7 +96,7 @@ class ProductController(private val repository: ProductRepository, private val a
      */
     @DeleteMapping("/products/{id}")
     fun deleteProduct(@PathVariable id: String): ResponseEntity<*> {
-        this.repository.deleteById(id)
+        this.productService.delete(id)
         return ResponseEntity.noContent().build<Any>()
     }
 }
