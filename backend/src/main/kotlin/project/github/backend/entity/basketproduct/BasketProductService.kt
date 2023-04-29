@@ -17,8 +17,8 @@ class BasketProductService(
      * @return The [BasketProduct] with the given id.
      * @throws BasketProductNotFoundException if no [BasketProduct] with the given id is found.
      */
-    fun getBasketProduct(id: Long) {
-        basketProductRepository.findById(id).orElseThrow { BasketProductNotFoundException(id) }
+    fun getBasketProduct(id: Long): BasketProduct {
+        return basketProductRepository.findById(id).orElseThrow { BasketProductNotFoundException(id) }
     }
 
     /**
