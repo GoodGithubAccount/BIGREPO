@@ -21,18 +21,20 @@ class OrderModelAssembler : RepresentationModelAssembler<Order, EntityModel<Orde
      * @param order the domain object to be converted.
      * @return the [EntityModel] representation with the links.
      */
-    override fun toModel(order: Order): EntityModel<OrderJson> {
-        val orderItemsWithLinks = order.orderItems.map { orderItem ->
-            val orderItemLinks = linkTo(methodOn(ProductController::class.java).getProduct(orderItem.product.getId())).withRel("product")
-            EntityModel.of(OrderItemJson(orderItem.id!!, orderItem.product, orderItem.quantity, mapOf("product" to orderItemLinks)))
-        }
+    override fun toModel(order: Order): EntityModel<Order> {
+        val model = EntityModel.of(order)
+        model.addSelfRel()
+        model.addBasketRel()
+
+        return model
+    }
+}
 
 private fun EntityModel<Order>.addSelfRel() {
     val orderId = this.content!!.id!!
 
     val controllerClass = OrderController::class.java
 
-    // with affordance to createOrder method
     add(linkTo(methodOn(OrderController::class.java).getOrder(orderId)).withSelfRel()
         .andAffordance(afford(methodOn(controllerClass).createOrder(null))))
 }
