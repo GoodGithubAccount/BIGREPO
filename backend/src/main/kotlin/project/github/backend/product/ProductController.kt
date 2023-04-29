@@ -31,8 +31,7 @@ class ProductController(private val repository: ProductRepository, private val a
         }.collect(Collectors.toList())
 
         return CollectionModel.of(
-            productsAsEntityModels,
-            linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
+            productsAsEntityModels, linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
         )
     }
 
@@ -46,8 +45,7 @@ class ProductController(private val repository: ProductRepository, private val a
     @PostMapping("/products")
     fun newProduct(@RequestBody newProduct: Product): ResponseEntity<*> {
         val entityModel: EntityModel<Product> = assembler.toModel(repository.save(newProduct))
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Product>>(entityModel)
     }
 
@@ -79,8 +77,7 @@ class ProductController(private val repository: ProductRepository, private val a
      * @param product The product object to convert.
      * @return An [EntityModel] containing the details of the converted product.
      */
-    private fun convertToEntityModel(product: Product) =
-        this.assembler.toModel(product)
+    private fun convertToEntityModel(product: Product) = this.assembler.toModel(product)
 
     /**
      * Endpoint for updating an existing [Product] by its [id] with [newProduct].
@@ -92,19 +89,16 @@ class ProductController(private val repository: ProductRepository, private val a
      */
     @PutMapping("/products/{id}")
     fun replaceProduct(@RequestBody newProduct: Product, @PathVariable id: String): ResponseEntity<*> {
-        val updatedProduct = findProductById(id)
-            .map {
-                updateProductFrom(it, newProduct)
-                repository.save(it)
-            }.orElseGet {
-                newProduct.id = id
-                repository.save(newProduct)
-            }
+        val updatedProduct = findProductById(id).map {
+            updateProductFrom(it, newProduct)
+            repository.save(it)
+        }.orElseGet {
+            newProduct.id = id
+            repository.save(newProduct)
+        }
 
         val entityModel = assembler.toModel(updatedProduct)
-        return ResponseEntity
-            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body(entityModel)
+        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
     }
 
     /**
