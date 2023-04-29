@@ -1,5 +1,0 @@
-package project.github.backend.order
-
-import org.springframework.data.jpa.repository.JpaRepository
-
-interface OrderRepository : JpaRepository<Order, Long>
