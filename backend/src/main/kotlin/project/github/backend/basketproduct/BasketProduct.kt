@@ -1,4 +1,4 @@
-package project.github.backend.basket
+package project.github.backend.basketproduct
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Entity
