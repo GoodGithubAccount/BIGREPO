@@ -1,6 +1,7 @@
-package project.github.backend.entity.product
+package project.github.backend.entity.product.exception
 
 import project.github.backend.exceptions.EntityNotFoundException
+import project.github.backend.entity.product.Product
 
 /**
  * An exception thrown when a requested [Product] cannot be found.
