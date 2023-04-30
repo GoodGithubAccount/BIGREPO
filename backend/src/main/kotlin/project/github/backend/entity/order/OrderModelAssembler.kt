@@ -35,7 +35,7 @@ private fun EntityModel<Order>.addSelfRel() {
 
     val controllerClass = OrderController::class.java
 
-    add(linkTo(methodOn(OrderController::class.java).getOrder(orderId)).withSelfRel()
+    add(linkTo(methodOn(controllerClass).getOrder(orderId)).withSelfRel()
         .andAffordance(afford(methodOn(controllerClass).createOrder(null))))
 }
 
