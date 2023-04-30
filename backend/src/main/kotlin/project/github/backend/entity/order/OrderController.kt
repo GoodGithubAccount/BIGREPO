@@ -72,9 +72,9 @@ class OrderController(
      * @throws IllegalOrderCompletionException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @PutMapping("/{id}/complete")
-    fun complete(@PathVariable id: Long): ResponseEntity<*> {
+    fun complete(@PathVariable id: Long): EntityModel<*> {
         val order = orderService.completeOrder(id)
-        return ResponseEntity.ok(assembler.toModel(orderService.save(order)))
+        return assembler.toModel(orderService.save(order))
     }
 
     /**
@@ -84,8 +84,9 @@ class OrderController(
      * @throws IllegalOrderCancellationException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @DeleteMapping("/{id}/cancel")
-    fun cancel(@PathVariable id: Long): ResponseEntity<*> {
-        val order = orderService.cancelOrder(id)
-        return ResponseEntity.ok(assembler.toModel(orderService.save(order)))
+    fun cancel(@PathVariable id: Long): EntityModel<*> {
+        val order = orderService.cancelOrder(id).also { orderService.save(it) }
+        log.info("Order cancelled: $order")
+        return assembler.toModel(order)
     }
 }

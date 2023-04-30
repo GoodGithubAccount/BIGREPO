@@ -21,6 +21,6 @@ data class Order(
     @Id @GeneratedValue @JsonIgnore val id: Long? = null,
     @OneToOne(cascade = [CascadeType.ALL]) @JsonIgnore val basket: Basket, //TODO add HREF link
     val totalPrice: BigDecimal,
-    var status: Status,
+    var status: Status = Status.IN_PROGRESS,
     val currency: String
 )
