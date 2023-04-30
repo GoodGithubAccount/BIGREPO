@@ -80,7 +80,7 @@ class ProductServiceTest {
         }
         val updatedProduct = product.copy()
 
-        productService.updateProduct(updatedProduct, newProductRepresentation)
+        productService.updateProduct(updatedProduct.id, newProductRepresentation)
 
         assertThat(updatedProduct).usingRecursiveComparison()
         assertThat(updatedProduct.name).isEqualTo(newProductRepresentation.name)
