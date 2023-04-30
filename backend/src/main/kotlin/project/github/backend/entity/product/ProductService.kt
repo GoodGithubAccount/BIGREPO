@@ -12,18 +12,18 @@ class ProductService(
 
     /**
      * Saves a [Product] to the database.
-     * @param product the [Product] to be saved in the form of a [ProductRepresentation].
+     * @param productRepresentation the [Product] to be saved in the form of a [ProductRepresentation].
      * @return the saved [Product].
      */
-    fun save(product: ProductRepresentation): Product {
+    fun save(productRepresentation: ProductRepresentation): Product {
         val newProduct = Product(
-            id = product.id!!,
-            name = product.name!!,
-            price = product.price!!.toInt(),
-            currency = product.currency!!,
-            rebateQuantity = product.rebateQuantity!!,
-            rebatePercent = product.rebatePercent!!.toInt(),
-            upsellProduct = product.upsellProductId!!
+            id = productRepresentation.id!!,
+            name = productRepresentation.name!!,
+            price = productRepresentation.price!!.toInt(),
+            currency = productRepresentation.currency!!,
+            rebateQuantity = productRepresentation.rebateQuantity!!,
+            rebatePercent = productRepresentation.rebatePercent!!.toInt(),
+            upsellProduct = productRepresentation.upsellProductId
             )
         return save(newProduct)
     }
@@ -46,18 +46,20 @@ class ProductService(
     }
 
     /**
-     * Updates all [Product] fields from the [existingProduct] to the [newProduct].
-     * @param  existingProduct the [Product] to be updated.
+     * Updates all [Product] fields from the new product to the existing product with the given id.
+     * @param  existingProductId the ID of the [Product] to be updated.
      * @param  newProduct the [Product] with the new values.
      * @return the updated [Product].
      */
-    fun updateProduct(existingProduct: Product, newProduct: ProductRepresentation) {
+    fun updateProduct(existingProductId: String, newProduct: ProductRepresentation): Product {
+        val existingProduct = getProduct(existingProductId)
         existingProduct.name = newProduct.name!!
         existingProduct.price = newProduct.price!!.toInt()
         existingProduct.currency = newProduct.currency!!
         existingProduct.rebateQuantity = newProduct.rebateQuantity!!
         existingProduct.rebatePercent = newProduct.rebatePercent!!.toInt()
-        existingProduct.upsellProduct = newProduct.upsellProductId!!
+        existingProduct.upsellProduct = newProduct.upsellProductId
+        return existingProduct
     }
 
     /**

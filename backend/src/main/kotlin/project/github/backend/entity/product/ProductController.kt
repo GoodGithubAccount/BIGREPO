@@ -1,5 +1,7 @@
 package project.github.backend.entity.product
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.IanaLinkRelations
@@ -20,6 +22,7 @@ import java.util.stream.Collectors
 class ProductController(
     private val assembler: ProductModelAssembler, private val productService: ProductService
 ) {
+    private val log: Logger = LoggerFactory.getLogger(ProductController::class.java)
 
     /**
      * Endpoint for Retrieving all [Product]s from the database and returns them as a collection of [EntityModel]s.
@@ -47,7 +50,10 @@ class ProductController(
      */
     @PostMapping()
     fun newProduct(@RequestBody newProduct: ProductRepresentation): ResponseEntity<*> {
-        val entityModel: EntityModel<Product> = this.assembler.toModel(this.productService.save(newProduct))
+        val savedProduct = this.productService.save(newProduct)
+        val entityModel: EntityModel<Product> = this.assembler.toModel(savedProduct)
+
+        log.info("Created new product: $entityModel")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body<EntityModel<Product>>(entityModel)
     }
@@ -81,12 +87,12 @@ class ProductController(
      */
     @PutMapping("/{id}")
     fun replaceProduct(@RequestBody newProduct: ProductRepresentation, @PathVariable id: String): ResponseEntity<*> {
-        val updatedProduct = this.productService.getProduct(id).also {
-            this.productService.updateProduct(it, newProduct)
-            this.productService.save(it)
-        }
-
+        val updatedProduct: Product =
+            this.productService.updateProduct(id, newProduct)
+        this.productService.save(updatedProduct)
         val entityModel = assembler.toModel(updatedProduct)
+
+        log.info("Updated product entityModel: $entityModel")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
     }
 
