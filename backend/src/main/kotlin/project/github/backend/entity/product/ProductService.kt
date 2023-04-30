@@ -1,6 +1,7 @@
 package project.github.backend.entity.product
 
 import org.springframework.stereotype.Service
+import project.github.backend.entity.product.exception.ProductNotFoundException
 
 /**
  * Service that provides [Product] related operations with the database.
