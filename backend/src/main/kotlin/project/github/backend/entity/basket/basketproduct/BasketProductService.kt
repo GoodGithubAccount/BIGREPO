@@ -1,7 +1,10 @@
-package project.github.backend.entity.basketproduct
+package project.github.backend.entity.basket.basketproduct
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import project.github.backend.entity.basketproduct.exception.BasketProductNotFoundException
+import project.github.backend.entity.basket.Basket
+import project.github.backend.entity.basket.basketproduct.exception.BasketProductNotFoundException
 import project.github.backend.entity.product.ProductService
 
 /**
@@ -11,14 +14,18 @@ import project.github.backend.entity.product.ProductService
 class BasketProductService(
     private val basketProductRepository: BasketProductRepository, private val productService: ProductService
 ) {
+    private val log: Logger = LoggerFactory.getLogger(BasketProductService::class.java)
+
     /**
      * Fetches a [BasketProduct] by its id from the database.
-     * @param id The id of the [BasketProduct].
+     * @param basketId The id of the related [Basket].
+     * @param basketProductId The id of the [BasketProduct].
      * @return The [BasketProduct] with the given id.
      * @throws BasketProductNotFoundException if no [BasketProduct] with the given id is found.
      */
-    fun getBasketProduct(id: Long): BasketProduct {
-        return basketProductRepository.findById(id).orElseThrow { BasketProductNotFoundException(id) }
+    fun getBasketProduct(basketId: Long, basketProductId: Long): BasketProduct {
+        return basketProductRepository.findByBasketIdAndId(basketId, basketProductId)
+            .orElseThrow { BasketProductNotFoundException(basketId, basketProductId) }
     }
 
     /**
@@ -27,13 +34,17 @@ class BasketProductService(
      * @param quantity The quantity of the product to add to the basket.
      * @return The created [BasketProduct].
      */
-    fun createBasketProduct(productId: String, quantity: Int): BasketProduct {
+    fun createBasketProduct(basket: Basket, productId: String, quantity: Int): BasketProduct {
         val foundProduct = productService.getProduct(productId)
-        return BasketProduct(
+        val basketProduct = BasketProduct(
             productId = productId,
             quantity = quantity,
             price = foundProduct.price.toBigDecimal(),
-            currency = foundProduct.currency
+            currency = foundProduct.currency,
+            basket = basket
         ).also { basketProductRepository.save(it) }
+
+        log.info("BasketProduct created: $basketProduct")
+        return basketProduct
     }
 }
