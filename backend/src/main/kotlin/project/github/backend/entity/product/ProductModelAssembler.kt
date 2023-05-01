@@ -1,4 +1,4 @@
-package project.github.backend.product
+package project.github.backend.entity.product
 
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.server.RepresentationModelAssembler
@@ -23,16 +23,21 @@ class ProductModelAssembler : RepresentationModelAssembler<Product, EntityModel<
      * @return the converted model-based object.
      */
     override fun toModel(product: Product): EntityModel<Product> {
-        val model = EntityModel.of(
-            product,
-            linkTo(methodOn(ProductController::class.java).getProduct(product.getId())).withSelfRel(),
-            linkTo(methodOn(ProductController::class.java).all()).withRel("products")
-        )
+        val model = EntityModel.of(product)
+        model.addSelfRel()
 
-        if (product.getUpsellProduct() != null) {
-            model.add(linkTo(methodOn(ProductController::class.java).getProduct(product.getUpsellProduct()!!)).withRel("upsellProduct"))
+        if (product.upsellProduct != null) {
+            model.add(linkTo(methodOn(ProductController::class.java).getProduct(product.upsellProduct!!)).withRel("upsellProduct"))
         }
 
         return model
+    }
+
+    private fun EntityModel<Product>.addSelfRel() {
+        val productId = this.content!!.id
+
+        val controllerClass = ProductController::class.java
+
+        add(linkTo(methodOn(controllerClass).getProduct(productId)).withSelfRel())
     }
 }
