@@ -1,6 +1,8 @@
 package project.github.backend.entity.order
 
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import project.github.backend.entity.basket.Basket
 import project.github.backend.entity.basket.BasketService
@@ -15,6 +17,8 @@ import project.github.backend.entity.order.exceptions.OrderNotFoundException
 class OrderService(
     private val orderRepository: OrderRepository, private val basketService: BasketService
 ) {
+    private val log: Logger = LoggerFactory.getLogger(OrderService::class.java)
+
     /**
      * Creates an [Order] in the database.
      * @param payload the [OrderRepresentation] containing the [Basket] products.
@@ -22,18 +26,16 @@ class OrderService(
     @Transactional
     fun createOrder(payload: OrderRepresentation): Order {
         val basketProducts = payload.products!!
+        var order = Order().also { orderRepository.save(it) }
+        val basket = basketService.createBasket(order, basketProducts)
 
-        val basket = basketService.createBasket(basketProducts)
-        val order = constructOrder(basket)
 
-        return orderRepository.save(order)
-    }
+        order = order.copy(
+            basket = basket, totalPrice = basketService.getTotalPrice(basket.id!!), currency = "DKK"
+        ).also { orderRepository.save(it) }
+        log.info("Order created: $order")
 
-    private fun constructOrder(basket: Basket): Order {
-        //TODO determine currency based on basket
-        return Order(
-            basket = basket, totalPrice = basketService.getTotalPrice(basket.id!!), status = Status.IN_PROGRESS, currency = "DKK"
-        )
+        return order
     }
 
     /**
