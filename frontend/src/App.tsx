@@ -8,7 +8,7 @@ function App() {
 		<div>
 			<h2>SHOPshop</h2>
 			<Route />
-			<h4>SHOPshop</h4>
+			<h4 id="footer">Shopshop - The best place to shop!</h4>
 		</div>
 	);
 }
