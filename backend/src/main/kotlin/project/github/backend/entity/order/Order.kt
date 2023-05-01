@@ -19,8 +19,8 @@ enum class Status {
 @Table(name = "CUSTOMER_ORDER")
 data class Order(
     @Id @GeneratedValue @JsonIgnore val id: Long? = null,
-    @OneToOne(cascade = [CascadeType.ALL]) @JsonIgnore val basket: Basket, //TODO add HREF link
-    val totalPrice: BigDecimal,
+    @OneToOne(cascade = [CascadeType.ALL]) @JsonIgnore var basket: Basket? = null, //TODO add HREF link
+    val totalPrice: BigDecimal = BigDecimal.ZERO,
     var status: Status = Status.IN_PROGRESS,
-    val currency: String
+    val currency: String = "UIN"
 )
