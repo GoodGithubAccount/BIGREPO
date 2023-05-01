@@ -1,16 +1,13 @@
 import React from 'react';
 import './App.css';
 import './index.css';
-import {BasketProvider} from './basket/BasketProvider';
-import {GridContainer} from './GridContainer';
+import Route from './Components/Route';
 
 function App() {
 	return (
 		<div>
 			<h2>SHOPshop</h2>
-			<BasketProvider>
-				<GridContainer/>
-			</BasketProvider>
+			<Route />
 			<h4>SHOPshop</h4>
 		</div>
 	);
