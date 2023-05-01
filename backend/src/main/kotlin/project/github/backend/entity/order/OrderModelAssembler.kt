@@ -35,11 +35,13 @@ private fun EntityModel<Order>.addSelfRel() {
 
     val controllerClass = OrderController::class.java
 
-    add(linkTo(methodOn(controllerClass).getOrder(orderId)).withSelfRel()
-        .andAffordance(afford(methodOn(controllerClass).createOrder(null))))
+    add(
+        linkTo(methodOn(controllerClass).getOrder(orderId)).withSelfRel()
+            .andAffordance(afford(methodOn(controllerClass).createOrder(null)))
+    )
 }
 
 private fun EntityModel<Order>.addBasketRel() {
-    val basketId = this.content!!.basket.id!!
+    val basketId = this.content!!.basket!!.id!!
     add(linkTo(methodOn(BasketController::class.java).getBasket(basketId)).withRel("basket"))
 }
