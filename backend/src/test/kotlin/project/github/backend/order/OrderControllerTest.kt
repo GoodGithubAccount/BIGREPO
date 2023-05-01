@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import project.github.backend.entity.basket.Basket
-import project.github.backend.entity.basketproduct.BasketProduct
+import project.github.backend.entity.basket.basketproduct.BasketProduct
 import project.github.backend.entity.order.*
 import java.math.BigDecimal
 
@@ -34,15 +34,15 @@ class OrderControllerTest {
     @MockBean
     private lateinit var assembler: OrderModelAssembler
 
-
     private val currency = "DKK"
+    private val basket = Basket(products = emptyList(), numberOfProducts = 0)
     private val basketProduct1 =
-        BasketProduct(productId = "p1", quantity = 1, price = BigDecimal(100), currency = currency)
+        BasketProduct(productId = "p1", quantity = 1, price = BigDecimal(100), currency = currency, basket = basket)
     private val basketProduct2 =
-        BasketProduct(productId = "p2", quantity = 2, price = BigDecimal(200), currency = currency)
+        BasketProduct(productId = "p2", quantity = 2, price = BigDecimal(200), currency = currency, basket = basket)
     private val basketProducts = listOf(basketProduct1, basketProduct2)
     private val numberOfProducts = basketProducts.sumOf { it.quantity }
-    private val basket = Basket(products = basketProducts, numberOfProducts = numberOfProducts)
+
 
     private val orderId = 1L
     private val totalPrice = BigDecimal(500)
@@ -53,6 +53,10 @@ class OrderControllerTest {
 
     @BeforeEach
     fun setup() {
+        basket.products = basketProducts
+        basket.numberOfProducts = numberOfProducts
+        basket.order = order
+
         `when`(orderService.createOrder(orderRepresentation)).thenReturn(order)
         `when`(orderService.getOrder(orderId)).thenReturn(order)
         `when`(orderService.getAllOrders()).thenReturn(listOf(order))
@@ -63,10 +67,6 @@ class OrderControllerTest {
 
     @Test
     fun `orders returns a list of orders`() {
-        // Prepare expected data
-        val orders = listOf(order)
-
-        // Test
         mockMvc.perform(get("/orders"))
             .andExpect(status().isOk)
             .andExpect(content().contentType("application/hal+json"))

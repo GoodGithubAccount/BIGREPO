@@ -31,7 +31,7 @@ class OrderServiceTest {
 
     @BeforeEach
     fun setup() {
-        `when`(basketService.createBasket(products)).thenReturn(basket)
+        `when`(basketService.createBasket(order, products)).thenReturn(basket)
         `when`(basketService.getTotalPrice(anyLong())).thenReturn(totalPrice)
         `when`(orderRepository.findById(orderId)).thenReturn(Optional.of(order))
         `when`(orderRepository.save(any(Order::class.java))).thenAnswer { invocation -> invocation.arguments[0] }

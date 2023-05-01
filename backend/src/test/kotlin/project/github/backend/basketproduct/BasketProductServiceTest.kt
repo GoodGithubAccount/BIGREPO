@@ -8,9 +8,10 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import project.github.backend.entity.basketproduct.BasketProduct
-import project.github.backend.entity.basketproduct.BasketProductRepository
-import project.github.backend.entity.basketproduct.BasketProductService
+import project.github.backend.entity.basket.Basket
+import project.github.backend.entity.basket.basketproduct.BasketProduct
+import project.github.backend.entity.basket.basketproduct.BasketProductRepository
+import project.github.backend.entity.basket.basketproduct.BasketProductService
 import project.github.backend.entity.product.Product
 import project.github.backend.entity.product.ProductService
 import java.math.BigDecimal
@@ -24,8 +25,9 @@ class BasketProductServiceTest {
 
     private val productId = "p1"
     private val quantity = 1
+    private val basket = Basket(products = emptyList(), numberOfProducts = 0)
     private val basketProduct =
-        BasketProduct(productId = productId, quantity = quantity, price = BigDecimal(100), currency = "DKK")
+        BasketProduct(productId = productId, quantity = quantity, price = BigDecimal(100), currency = "DKK", basket = basket)
     private val basketId = 1L
 
     private val product = Product(
@@ -48,14 +50,14 @@ class BasketProductServiceTest {
 
     @Test
     fun `getBasketProduct returns the BasketProduct given a valid id`() {
-        val foundBasketProduct = basketProductService.getBasketProduct(basketId)
+        val foundBasketProduct = basketProductService.getBasketProduct(basketId, basketId)
 
         assertThat(foundBasketProduct).isEqualTo(basketProduct)
     }
 
     @Test
     fun `createBasketProduct returns the created BasketProduct given valid id and quantity`() {
-        val createdBasketProduct = basketProductService.createBasketProduct(productId, quantity)
+        val createdBasketProduct = basketProductService.createBasketProduct(basket, productId, quantity)
 
         assertThat(createdBasketProduct.productId).isEqualTo(productId)
         assertThat(createdBasketProduct.quantity).isEqualTo(quantity)

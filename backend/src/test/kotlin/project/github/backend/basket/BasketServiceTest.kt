@@ -11,8 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import project.github.backend.entity.basket.Basket
 import project.github.backend.entity.basket.BasketRepository
 import project.github.backend.entity.basket.BasketService
-import project.github.backend.entity.basketproduct.BasketProduct
-import project.github.backend.entity.basketproduct.BasketProductService
+import project.github.backend.entity.basket.basketproduct.BasketProduct
+import project.github.backend.entity.basket.basketproduct.BasketProductService
+import project.github.backend.entity.order.Order
 import java.math.BigDecimal
 import java.util.*
 
@@ -24,19 +25,35 @@ class BasketServiceTest {
 
     private val basketId = 1L
     private val products = mapOf("p1" to 1, "p2" to 2)
+    private val basket = Basket(id = basketId, products = emptyList(), numberOfProducts = 0)
     private val basketProducts = products.map { (id, quantity) ->
-        BasketProduct(productId = id, quantity = quantity, price = BigDecimal(100), currency = "DKK")
+        BasketProduct(productId = id, quantity = quantity, price = BigDecimal(100), currency = "DKK", basket = basket)
     }
-    private val basket = Basket(id = basketId, products = basketProducts, numberOfProducts = basketProducts.size)
 
     @BeforeEach
     fun setup() {
+        basket.products = basketProducts
+        basket.numberOfProducts = products.size
         //mock repository and service behaviors
         `when`(basketRepository.findById(basketId)).thenReturn(Optional.of(basket))
-        `when`(basketProductService.createBasketProduct(anyString(), anyInt())).thenAnswer { invocation ->
-            val id = invocation.arguments[0] as String
-            val quantity = invocation.arguments[1] as Int
-            BasketProduct(productId = id, quantity = quantity, price = BigDecimal(100), currency = "DKK")
+        `when`(
+            basketProductService.createBasketProduct(
+                any(Basket::class.java) ?: Basket(
+                    products = emptyList(),
+                    numberOfProducts = 0
+                ), anyString(), anyInt()
+            )
+        ).thenAnswer { invocation ->
+            val basket = invocation.arguments[0] as Basket
+            val productId = invocation.arguments[1] as String
+            val quantity = invocation.arguments[2] as Int
+            BasketProduct(
+                productId = productId,
+                quantity = quantity,
+                price = BigDecimal(100),
+                currency = "DKK",
+                basket = basket
+            )
         }
         `when`(basketRepository.save(any(Basket::class.java))).thenAnswer { invocation -> invocation.arguments[0] }
     }
@@ -50,7 +67,7 @@ class BasketServiceTest {
 
     @Test
     fun `createBasket returns the created Basket given valid products`() {
-        val createdBasket = basketService.createBasket(products)
+        val createdBasket = basketService.createBasket(Order(), products)
 
         assertThat(createdBasket.products.size).isEqualTo(products.size)
         assertThat(createdBasket.numberOfProducts).isEqualTo(products.size)
