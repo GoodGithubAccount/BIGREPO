@@ -5,13 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "cross-env VITE_API_URL=https://62.66.147.196:8080 tsc && vite build --mode production",
+    "build": "cross-env VITE_API_URL=https://hdfat.dk/api tsc && vite build --mode production",
     "preview": "vite preview",
-    "deploy": "cross-env VITE_API_URL=https://62.66.147.196:8080 ntl deploy"
+    "deploy": "cross-env VITE_API_URL=https://hdfat.dk/api ntl deploy",
+    "test": "cross-env VITE_API_URL=https://localhost/api npx vitest"
   },
   "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "jsdom": "^21.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "vitest": "^0.29.8"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

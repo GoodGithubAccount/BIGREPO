@@ -48,3 +48,10 @@
 .read-the-docs {
     color: #888;
 }
+
+#footer {
+    font-size: 14px;
+    color: #777;
+    text-align: center;
+    margin-top: 50px;
+}
