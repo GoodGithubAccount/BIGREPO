@@ -9,10 +9,23 @@ import java.math.BigDecimal
  */
 class ProductRepresentation : RepresentationModel<ProductRepresentation>() {
     var id: String? = null
-    var name: String? =  null
+    var name: String? = null
     var price: BigDecimal? = null
-    var currency: String? = null //TODO currency verification https://docs.spring.io/spring-hateoas/docs/current/reference/html/#mediatypes.hal-forms.options
+    var currency: String? =
+        null //TODO currency verification https://docs.spring.io/spring-hateoas/docs/current/reference/html/#mediatypes.hal-forms.options
     var rebateQuantity: Int? = null
     var rebatePercent: BigDecimal? = null
     var upsellProductId: String? = null //TODO runtime verification?
+
+    override fun toString(): String {
+        return "ProductRepresentation(" +
+                "id=$id, " +
+                "name=$name, " +
+                "price=$price, " +
+                "currency=$currency, " +
+                "rebateQuantity=$rebateQuantity, " +
+                "rebatePercent=$rebatePercent, " +
+                "upsellProductId=$upsellProductId" +
+                ")"
+    }
 }
