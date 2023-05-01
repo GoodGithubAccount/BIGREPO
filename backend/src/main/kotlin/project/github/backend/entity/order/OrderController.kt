@@ -20,7 +20,7 @@ import java.util.stream.Collectors
 @RequestMapping("/orders")
 class OrderController(
     private val orderService: OrderService,
-    val assembler: OrderModelAssembler,
+    private val assembler: OrderModelAssembler,
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
 
