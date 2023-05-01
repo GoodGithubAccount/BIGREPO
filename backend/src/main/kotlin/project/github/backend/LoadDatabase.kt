@@ -5,12 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import project.github.backend.entity.basket.Basket
-import project.github.backend.entity.basketproduct.BasketProduct
-import project.github.backend.entity.order.Order
-import project.github.backend.entity.order.OrderRepository
-import project.github.backend.entity.order.OrderService
-import project.github.backend.entity.order.Status
+import project.github.backend.entity.order.*
 import project.github.backend.entity.product.Product
 import project.github.backend.entity.product.ProductRepository
 
@@ -30,56 +25,23 @@ class LoadDatabase {
      */
     @Bean
     fun initDatabase(
-        productRepository: ProductRepository,
-        orderRepository: OrderRepository,
-        orderService: OrderService
+        productRepository: ProductRepository, orderRepository: OrderRepository, orderService: OrderService
     ) = CommandLineRunner {
         println("Preloading...")
+        
         val p1 = Product("vitamin-d-90-100", "D-vitamin, 90ug, 100 stk", 116, "DKK", 3, 10, null)
         val p2 = Product("vitamin-c-500-250", "C-vitamin, 500mg, 250 stk", 150, "DKK", 2, 25, "vitamin-c-depot-500-250")
-        val o1 = Order(
-            basket = Basket(
-                products = listOf(
-                    BasketProduct(
-                        productId = p1.id,
-                        quantity = 2,
-                        price = (p1.price).toBigDecimal(),
-                        currency = p1.currency
-                    ),
-                    BasketProduct(
-                        productId = p2.id,
-                        quantity = 3,
-                        price = (p2.price).toBigDecimal(),
-                        currency = p2.currency
-                    )
-                ),
-                numberOfProducts = 1,
-            ),
-            totalPrice = (p1.price * 2).toBigDecimal(),
-            status = Status.IN_PROGRESS,
-            currency = "DKK"
-
-        )
-        val o2 = Order(
-            basket = Basket(
-                products = listOf(
-                    BasketProduct(
-                        productId = p1.id,
-                        quantity = 5,
-                        price = (p1.price).toBigDecimal(),
-                        currency = p1.currency
-                    )
-                ),
-                numberOfProducts = 1,
-            ),
-            totalPrice = (p1.price * 2).toBigDecimal(),
-            status = Status.IN_PROGRESS,
-            currency = "DKK"
-        )
-
         log.info("Preloading " + productRepository.save(p1))
         log.info("Preloading " + productRepository.save(p2))
-        log.info("Preloading " + orderRepository.save(o1))
-        log.info("Preloading " + orderRepository.save(o2))
+
+        val or1 = OrderRepresentation()
+        or1.products = mapOf(p1.id to 2, p2.id to 3)
+        orderService.createOrder(or1)
+
+        val or2 = OrderRepresentation()
+        or2.products = mapOf(p2.id to 1)
+        orderService.createOrder(or2)
+
+
     }
 }
