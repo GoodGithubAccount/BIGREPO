@@ -1,4 +1,4 @@
-package project.github.backend.order
+package project.github.backend.entity.order
 
 import org.springframework.data.jpa.repository.JpaRepository
 

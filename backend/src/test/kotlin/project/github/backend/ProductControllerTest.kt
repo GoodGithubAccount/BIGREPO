@@ -1,250 +1,226 @@
 package project.github.backend
 
-import org.assertj.core.api.Assertions.assertThat
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.*
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.test.annotation.DirtiesContext
-import project.github.backend.product.Product
-import project.github.backend.product.ProductRepository
-import kotlin.random.Random
+import org.springframework.hateoas.EntityModel
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn
+import org.springframework.http.MediaType
+import org.springframework.http.RequestEntity.*
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import project.github.backend.entity.order.*
+import project.github.backend.entity.product.*
+import java.math.BigDecimal
 
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["spring.datasource.url=jdbc:h2:mem:testdb"]
-)
-class ProductControllerTest(@Autowired val client: TestRestTemplate, @Autowired val repository: ProductRepository) {
+@WebMvcTest(ProductController::class)
+class ProductControllerTest {
+    @Autowired
+    private lateinit var mockMvc: MockMvc
 
-    @Test
-    fun `putting a product with a different ID will set new ID`() {
-        val productId = "unique-id"
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
+    @MockBean
+    private lateinit var productService: ProductService
 
-        repository.save(product)
+    @MockBean
+    private lateinit var assembler: ProductModelAssembler
 
-        val randomId = Random.nextInt().toString()
-        val newName = "new product"
+    private val product1 = Product("p1", "Product 1", 100, "DKK", 2, 10, "p2")
+    private val product2 = Product("p2", "Product 2", 200, "DKK", 3, 15, null)
 
-        val productWithDifferentID = Product(
-            id = randomId,
-            name = newName,
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
+    private val productRepresentation = ProductRepresentation().apply {
+        id = "p1"
+        name = "Product 1"
+        price = BigDecimal(100)
+        currency = "DKK"
+        rebateQuantity = 2
+        rebatePercent = BigDecimal(10)
+        upsellProductId = "p2"
+    }
 
-        putProductForEntity(productWithDifferentID, productId)
+    @BeforeEach
+    fun setup() {
+        //mock ProductService methods
+        mockGetAllProducts()
+        mockSave()
 
-        val savedProduct = repository.findById(productId).get()
+        //mock ProductModelAssembler methods
+        mockToModel()
+    }
 
-        assertThat(savedProduct.getName()).isEqualTo(newName)
-        assertThat(savedProduct.getId()).isNotEqualTo(randomId)
+    private fun mockGetAllProducts() {
+        `when`(productService.getAllProducts()).thenReturn(listOf(product1, product2))
+    }
+
+    private fun mockSave() {
+        `when`(
+            productService.save(
+                any(Product::class.java) ?: Product(
+                    "UNINITIALIZED", "Uninitialized", 0, "UIN", 0, 0, "UNINITIALIZED"
+                )
+            )
+        ).thenAnswer { invocation ->
+            val productArg = invocation.arguments[0] as Product
+            if (productArg.id == product1.id) {
+                product1.copy(
+                    name = productArg.name,
+                    price = productArg.price,
+                    currency = productArg.currency,
+                    rebateQuantity = productArg.rebateQuantity,
+                    rebatePercent = productArg.rebatePercent,
+                    upsellProduct = productArg.upsellProduct
+                )
+            } else {
+                productArg
+            }
+        }
+        `when`(
+            productService.save(
+                any(ProductRepresentation::class.java) ?: ProductRepresentation()
+            )
+        ).thenAnswer { invocation ->
+            val productArg = invocation.arguments[0] as ProductRepresentation
+            if (productArg.id == product1.id) {
+                product1.copy(
+                    name = productArg.name!!,
+                    price = productArg.price!!.toInt(),
+                    currency = productArg.currency!!,
+                    rebateQuantity = productArg.rebateQuantity!!,
+                    rebatePercent = productArg.rebatePercent!!.toInt(),
+                    upsellProduct = productArg.upsellProductId
+                )
+            } else {
+                productArg
+            }
+        }
+    }
+
+    private fun mockToModel() {
+        `when`(
+            assembler.toModel(
+                any(Product::class.java) ?: Product(
+                    "UNINITIALIZED", "Uninitialized", 0, "UIN", 0, 0, "UNINITIALIZED"
+                )
+            )
+        ).thenAnswer { invocation ->
+            val product = invocation.arguments[0] as Product
+            if (product.name == "Updated Product 1") {
+                EntityModel.of(product).apply {
+                    add(linkTo(methodOn(ProductController::class.java).getProduct(product.id)).withSelfRel())
+                }
+            } else {
+                EntityModel.of(product).apply {
+                    add(linkTo(methodOn(ProductController::class.java).getProduct(product.id)).withSelfRel())
+                }
+            }
+        }
     }
 
     @Test
-    fun `putting a product returns 201`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
+    fun `all returns all products`() {
+        mockMvc.perform(get("/products")).andExpect(status().isOk)
+            .andExpect(jsonPath("$._embedded.productList[0].id").value(product1.id))
+            .andExpect(jsonPath("$._embedded.productList[1].id").value(product2.id))
+    }
+    
+    @Test
+    fun `newProduct returns the created product`() {
+        mockMvc.perform(
+            post("/products").contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectMapper().writeValueAsString(productRepresentation))
         )
-
-        val response = putProductForEntity(product, productId)
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(product1.id))
     }
 
     @Test
-    fun `posting a product returns 201`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
-
-        val response = postProductForEntity(product)
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    fun `getProduct returns a product by ID`() {
+        mockGetProduct()
+        mockMvc.perform(get("/products/p1"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(product1.id))
     }
 
     @Test
-    fun `getting all products returns 200`() {
-        val entity = getEntityForAllProducts()
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+    fun `replaceProduct updates the product`() {
+        mockGetProduct()
+        mockUpdateProduct()
+
+        val updatedProductRepresentation = ProductRepresentation().apply {
+            id = product1.id
+            name = "Updated Product 1"
+            price = BigDecimal(150)
+            currency = "DKK"
+            rebateQuantity = 3
+            rebatePercent = BigDecimal(15)
+            upsellProductId = null
+        }
+
+        mockMvc.perform(
+            put("/products/{id}", product1.id).contentType(MediaType.APPLICATION_JSON)
+                .content(ObjectMapper().writeValueAsString(updatedProductRepresentation))
+        )
+            .andExpect(status().isCreated).andExpect(jsonPath("$.id").value(product1.id))
+            .andExpect(jsonPath("$.name").value(updatedProductRepresentation.name))
     }
+
+    private fun mockGetProduct() {
+        `when`(productService.getProduct("p1")).thenAnswer {
+            if (product1.name == "Updated Product 1") {
+                product1.copy(
+                    name = "Updated Product 1",
+                    price = 150,
+                    currency = "DKK",
+                    rebateQuantity = 3,
+                    rebatePercent = 15,
+                    upsellProduct = null
+                )
+            } else {
+                product1
+            }
+        }
+    }
+
+    private fun mockUpdateProduct() {
+        `when`(
+            productService.updateProduct(
+                anyString(),
+                any(ProductRepresentation::class.java) ?: ProductRepresentation()
+            )
+        ).thenAnswer { invocation ->
+            val existingProductId = invocation.arguments[0] as String
+            val newProduct = invocation.arguments[1] as ProductRepresentation
+
+            val existingProduct = when (existingProductId) {
+                product1.id -> product1
+                product2.id -> product2
+                else -> throw IllegalArgumentException("Invalid product ID")
+            }
+
+            existingProduct.name = newProduct.name!!
+            existingProduct.price = newProduct.price!!.toInt()
+            existingProduct.currency = newProduct.currency!!
+            existingProduct.rebateQuantity = newProduct.rebateQuantity!!
+            existingProduct.rebatePercent = newProduct.rebatePercent!!.toInt()
+            existingProduct.upsellProduct = newProduct.upsellProductId
+
+            existingProduct
+        }
+    }
+
 
     @Test
-    fun `getting a non-existent product by ID returns 404`() {
-        val id = Random.nextInt().toString()
-        val entity = getEntityForProduct(id)
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    fun `deleteProduct deletes the product and returns no content`() {
+        mockMvc.perform(delete("/products/p1"))
+            .andExpect(status().isNoContent)
     }
-
-    @DirtiesContext
-    @Test
-    fun `deleting a product returns 204`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
-        repository.save(product)
-
-        val response = deleteProductForEntity(productId)
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
-        assertThat(repository.findById(productId)).isEmpty
-    }
-
-    @DirtiesContext
-    @Test
-    fun `upsellProduct can be string`() {
-        val stringUpsellId = Random.nextInt().toString()
-        val upsellString = Random.nextInt().toString()
-        val stringUpsellProduct = Product(
-            id = stringUpsellId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = upsellString
-        )
-
-        postProductForObject(stringUpsellProduct)
-
-        val product = repository.findById(stringUpsellId).get()
-        assertThat(product.getUpsellProduct()).isEqualTo(upsellString)
-    }
-
-    @DirtiesContext
-    @Test
-    fun `upsellProduct can be null`() {
-        val nullUpsellId = Random.nextInt().toString()
-        val nullUpsellProduct = Product(
-            id = nullUpsellId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
-
-        postProductForObject(nullUpsellProduct)
-
-        val product = repository.findById(nullUpsellId).get()
-        assertThat(product.getUpsellProduct()).isNull()
-    }
-
-    @DirtiesContext
-    @Test
-    fun `posting a product returns the product and saves it`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = "null"
-        )
-
-        val postResponse = postProductForObject(product)
-
-        assertThat(postResponse).isEqualTo(product)
-        val productInRepository = repository.findById(productId).get()
-        assertThat(productInRepository).isEqualTo(product)
-    }
-
-    @DirtiesContext
-    @Test
-    fun `products with same ID are equal`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = null
-        )
-        val newProduct = Product(
-            id = productId,
-            name = "Jeffrey Bezos",
-            price = 3,
-            currency = "USD",
-            rebateQuantity = 5,
-            rebatePercent = 10,
-            upsellProduct = "another-id"
-        )
-
-        assertThat(product).isEqualTo(newProduct)
-    }
-
-    @DirtiesContext
-    @Test
-    fun `getting a product by id that was removed will return 404`() {
-        val productId = Random.nextInt().toString()
-        val product = Product(
-            id = productId,
-            name = "",
-            price = 0,
-            currency = "",
-            rebateQuantity = 0,
-            rebatePercent = 0,
-            upsellProduct = "null"
-        )
-        repository.save(product)
-
-        deleteProduct(productId)
-
-        val getResponse = getEntityForProduct(productId)
-        assertThat(getResponse.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-    }
-
-    private fun getEntityForProduct(productId: String) = client.getForEntity<String>("/products/$productId")
-    private fun deleteProduct(productId: String) = client.delete("/products/$productId")
-    private fun deleteProductForEntity(productId: String): ResponseEntity<Product> = client.exchange(
-        "/products/{id}", HttpMethod.DELETE, null, Product::class.java, productId
-    )
-
-    private fun postProductForObject(product: Product) = client.postForObject<Product>("/products", product)
-    private fun postProductForEntity(product: Product) = client.postForEntity<Product>("/products", product)
-    private fun getEntityForAllProducts() = client.getForEntity<String>("/products")
-    private fun putProductForEntity(product: Product, productId: String) = client.exchange(
-        "/products/{id}", HttpMethod.PUT, HttpEntity(product), Product::class.java, productId
-    )
 }

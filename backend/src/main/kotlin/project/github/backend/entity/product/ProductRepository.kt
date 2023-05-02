@@ -1,4 +1,4 @@
-package project.github.backend.product
+package project.github.backend.entity.product
 
 import org.springframework.data.jpa.repository.JpaRepository
 

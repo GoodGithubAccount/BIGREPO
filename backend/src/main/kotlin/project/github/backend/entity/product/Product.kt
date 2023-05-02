@@ -1,4 +1,4 @@
-package project.github.backend.product
+package project.github.backend.entity.product
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -15,14 +15,14 @@ import jakarta.persistence.Id
  * @throws IllegalArgumentException If the price, [rebateQuantity] or [rebatePercent] is not valid.
  */
 @Entity
-class Product(
-        @Id private var id: String,
-        private var name: String,
-        private var price: Int,
-        private var currency: String,
-        private var rebateQuantity: Int,
-        private var rebatePercent: Int,
-        private var upsellProduct: String?
+data class Product(
+    @Id var id: String,
+    var name: String,
+    var price: Int,
+    var currency: String,
+    var rebateQuantity: Int,
+    var rebatePercent: Int,
+    var upsellProduct: String?
 ) {
 
     init {
@@ -72,35 +72,5 @@ class Product(
      */
     override fun toString(): String {
         return toStringBuilder()
-    }
-
-    fun getId(): String = this.id
-    fun getName(): String = this.name
-    fun getPrice(): Int = this.price
-    fun getCurrency(): String = this.currency
-    fun getRebateQuantity(): Int = this.rebateQuantity
-    fun getRebatePercent(): Int = this.rebatePercent
-    fun getUpsellProduct(): String? = this.upsellProduct
-
-    fun setId(id: String) {
-        this.id = id
-    }
-    fun setName(name: String) {
-        this.name = name
-    }
-    fun setPrice(price: Int) {
-        this.price = price
-    }
-    fun setCurrency(currency: String) {
-        this.currency = currency
-    }
-    fun setRebateQuantity(rebateQuantity: Int) {
-        this.rebateQuantity = rebateQuantity
-    }
-    fun setRebatePercent(rebatePercent: Int) {
-        this.rebatePercent = rebatePercent
-    }
-    fun setUpsellProduct(upsellProduct: String?) {
-        this.upsellProduct = upsellProduct
     }
 }
