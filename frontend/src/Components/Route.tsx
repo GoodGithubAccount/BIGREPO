@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import Pages from '../Pages';
+import Pages, {PagesType} from '../Pages';
 
 // This component is responsible for rendering the appropriate page based on the current step
 const Route = () => {

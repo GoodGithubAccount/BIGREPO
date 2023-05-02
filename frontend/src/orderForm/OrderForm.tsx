@@ -132,18 +132,13 @@ function handleZipCodeBlur(event: React.FocusEvent<HTMLInputElement>) {
 		});
 }
 
-async function createNewOrder(basket: BasketItem[]) {
-	const url = 'https://localhost/api/orders';
+async function createNewOrder(basket: BasketItem[]): Promise <void> {
+	const url = `${import.meta.env.VITE_API_URL}/orders`;
 
-	const basketItems = basket.flatMap(({products, amount}) => Array.from({length: amount}, () => ({
-		id: products.id,
-		name: products.name,
-		price: products.price,
-		currency: products.currency,
-		rebateQuantity: products.rebateQuantity,
-		rebatePercent: products.rebatePercent,
-		upsellProduct: products.upsellProduct,
-	})));
+	const basketItems: { [id: string]: number } = {};
+	basket.forEach(({products, amount}) => {
+		basketItems[products.id] = amount;
+	});
 
 	const response = await fetch(url, {
 		method: 'POST',
@@ -157,6 +152,16 @@ async function createNewOrder(basket: BasketItem[]) {
 	});
 
 	if (!response.ok) {
-		throw new Error(`HTTP error! status: ${response.status}`);
+		throw new Error(`HTTP error! status: \${response.status}`);
+	}
+
+	const order = await response.json();
+
+	if (typeof order.id === 'undefined') {
+		alert('The ID is undefined.');
+	} else {
+		const id: number = order.id;
+		alert('YOUR ORDER ID IS: '.concat(String(id)));
 	}
 }
+
