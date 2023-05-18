@@ -27,8 +27,7 @@ class ProductController(
 
     /**
      * Endpoint for Retrieving all [Product]s from the database and returns them as a collection of [EntityModel]s.
-     * @return A [CollectionModel] containing [EntityModel]s of all products in the database,
-     * along with a self-referencing link.
+     * @return Links to all existing products
      */
     @GetMapping()
     fun all(): HttpEntity<*> {
@@ -52,21 +51,17 @@ class ProductController(
     /**
      * Endpoint for saving a given [Product] instance to the [ProductRepository].
      * @param newProduct The [Product] entity to be saved.
-     * @return A [ResponseEntity] object with the saved [Product] in the response body
-     * and a self-referencing link in the response header.
-     * The response status code is 201 (Created).
+     * @return The saved product
      */
     @PostMapping()
     fun newProduct(@RequestBody newProduct: ProductRepresentation?): HttpEntity<*> {
         if (newProduct == null) {
             throw IllegalProductOperationException("Product representation cannot be null")
         }
-        val savedProduct = this.productService.save(newProduct)/*val entityModel: EntityModel<Product> = this.productAssembler.toModel(savedProduct)
 
-        log.info("Created new product: $entityModel")
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body<EntityModel<Product>>(entityModel)*/
-        return ResponseEntity.ok(null)
+        val savedProductId = this.productService.save(newProduct).id
+
+        return getProduct(savedProductId)
     }
 
     /**
