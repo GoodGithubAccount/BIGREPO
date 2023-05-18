@@ -40,7 +40,7 @@ class ProductController(
 
         val productLinks = allProducts.map { product ->
             linkTo(methodOn(ProductController::class.java).getProduct(product.id)).withRel("product")
-                .withTitle(product.id)
+                .withTitle(product.name)
         }
 
         val model = HalModelBuilder.emptyHalModel().link(selfLink).link(findLink).links(productLinks).build()
