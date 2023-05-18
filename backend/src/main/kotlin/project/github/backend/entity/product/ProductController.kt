@@ -105,14 +105,6 @@ class ProductController(
     }
 
     /**
-     * Converts the non-model object [product] to the equivalent
-     * model-based object [EntityModel] using the class [assembler].
-     * @param product The product object to convert.
-     * @return An [EntityModel] containing the details of the converted product.
-     */
-    private fun convertToEntityModel(product: Product) = this.assembler.toModel(product)
-
-    /**
      * Endpoint for updating an existing [Product] by its [id] with [newProduct].
      *
      * If the [Product] is not found the [newProduct] is saved in the [ProductRepository].
