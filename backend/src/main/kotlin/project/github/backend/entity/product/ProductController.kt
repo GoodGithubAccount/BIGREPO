@@ -108,7 +108,7 @@ class ProductController(
      * @return An HTTP 201 Created with the updated product as an EntityModel in the body.
      */
     @PutMapping("/{id}")
-    fun replaceProduct(@RequestBody newProduct: ProductRepresentation?, @PathVariable id: String?): ResponseEntity<*> {
+    fun replaceProduct(@RequestBody newProduct: ProductRepresentation?, @PathVariable id: String?): HttpEntity<*> {
         //https://github.com/spring-projects/spring-hateoas/issues/1186
         if (newProduct == null) {
             throw IllegalProductOperationException("Product Representation cannot be null")
@@ -120,11 +120,9 @@ class ProductController(
         }
 
         val updatedProduct: Product = this.productService.updateProduct(id, newProduct)
-        this.productService.save(updatedProduct)
-        val entityModel = productAssembler.toModel(updatedProduct)
+        val savedProductId = this.productService.save(updatedProduct).id
 
-        log.info("Updated product entityModel: $entityModel")
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
+        return getProduct(savedProductId)
     }
 
     /**
