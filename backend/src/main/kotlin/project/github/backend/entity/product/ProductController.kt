@@ -31,15 +31,22 @@ class ProductController(
      * along with a self-referencing link.
      */
     @GetMapping()
-    fun all(): CollectionModel<EntityModel<Product>> {
-        val productsStream = this.productService.getAllProducts().stream()
-        val productsAsEntityModels = productsStream.map { product ->
-            convertToEntityModel(product)
-        }.collect(Collectors.toList())
+    fun all(): HttpEntity<*> {
+        val allProducts = this.productService.getAllProducts()
 
-        return CollectionModel.of(
-            productsAsEntityModels, linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
-        )
+        val selfLink = linkTo(methodOn(ProductController::class.java).all()).withSelfRel()
+            .andAffordance(afford(methodOn(ProductController::class.java).newProduct(null)))
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
+        val findLink = linkTo(methodOn(ProductController::class.java).getProduct(null)).withRel("find")
+
+        val productLinks = allProducts.map { product ->
+            linkTo(methodOn(ProductController::class.java).getProduct(product.id)).withRel("product")
+                .withTitle(product.id)
+        }
+
+        val model = HalModelBuilder.emptyHalModel().link(selfLink).link(findLink).links(productLinks).build()
+
+        return ResponseEntity.ok(model)
     }
 
     /**
