@@ -1,26 +1,27 @@
 package project.github.backend.entity.product
 
+import project.github.backend.entity.product.exception.IllegalProductOperationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.hateoas.CollectionModel
-import org.springframework.hateoas.EntityModel
-import org.springframework.hateoas.IanaLinkRelations
-import org.springframework.hateoas.server.core.DummyInvocationUtils.methodOn
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
+import org.springframework.hateoas.*
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*
+import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.stream.Collectors
+import project.github.backend.entity.product.exception.ProductNotFoundException
 
 /**
  * This class represents the [RestController] for handling HTTP requests related to [Product] entities.
  * It defines several endpoints for managing CRUD operations of the [Product] entities.
- * @param assembler The [ProductModelAssembler] instance used to convert [Product] entities to [EntityModel]s.
+ * @param productAssembler The [ProductModelAssembler] instance used to convert [Product] entities to [EntityModel]s.
  * @param productService The [ProductService] instance used to perform CRUD operations on [Product] entities.
  */
 @RestController
 @RequestMapping("/products")
 class ProductController(
-    private val assembler: ProductModelAssembler, private val productService: ProductService
+    private val productAssembler: ProductModelAssembler,
+    private val productService: ProductService
 ) {
     private val log: Logger = LoggerFactory.getLogger(ProductController::class.java)
 
@@ -49,13 +50,16 @@ class ProductController(
      * The response status code is 201 (Created).
      */
     @PostMapping()
-    fun newProduct(@RequestBody newProduct: ProductRepresentation): ResponseEntity<*> {
-        val savedProduct = this.productService.save(newProduct)
-        val entityModel: EntityModel<Product> = this.assembler.toModel(savedProduct)
+    fun newProduct(@RequestBody newProduct: ProductRepresentation?): HttpEntity<*> {
+        if (newProduct == null) {
+            throw IllegalProductOperationException("Product representation cannot be null")
+        }
+        val savedProduct = this.productService.save(newProduct)/*val entityModel: EntityModel<Product> = this.productAssembler.toModel(savedProduct)
 
         log.info("Created new product: $entityModel")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-            .body<EntityModel<Product>>(entityModel)
+            .body<EntityModel<Product>>(entityModel)*/
+        return ResponseEntity.ok(null)
     }
 
     /**
@@ -64,9 +68,33 @@ class ProductController(
      * @return An [EntityModel] containing the details of the retrieved product.
      */
     @GetMapping("/{id}")
-    fun getProduct(@PathVariable id: String): EntityModel<Product> {
+    fun getProduct(@PathVariable id: String?): HttpEntity<*> {
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
+        if (id == null) {
+            throw IllegalProductOperationException("Product id cannot be null")
+        }
         val product = this.productService.getProduct(id)
-        return convertToEntityModel(product)
+
+        val productControllerProxy = methodOn(ProductController::class.java)
+
+        val updateTemplate = afford(productControllerProxy.replaceProduct(null, null))
+        val deleteTemplate = afford(productControllerProxy.deleteProduct(null))
+
+        val templates = listOf(updateTemplate, deleteTemplate)
+
+        val selfLink = linkTo(productControllerProxy.getProduct(id)).withSelfRel()
+            .andAffordances(templates)
+        val allLink = linkTo(productControllerProxy.all()).withRel("all")
+        val findLink = linkTo(methodOn(ProductController::class.java).getProduct(null)).withRel("find")
+
+        val links = listOf(selfLink, allLink, findLink)
+
+        val model = HalModelBuilder.halModel()
+            .embed(product)
+            .links(links)
+            .build()
+
+        return ResponseEntity.ok(model)
     }
 
     /**
@@ -86,11 +114,20 @@ class ProductController(
      * @return An HTTP 201 Created with the updated product as an EntityModel in the body.
      */
     @PutMapping("/{id}")
-    fun replaceProduct(@RequestBody newProduct: ProductRepresentation, @PathVariable id: String): ResponseEntity<*> {
-        val updatedProduct: Product =
-            this.productService.updateProduct(id, newProduct)
+    fun replaceProduct(@RequestBody newProduct: ProductRepresentation?, @PathVariable id: String?): ResponseEntity<*> {
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
+        if (newProduct == null) {
+            throw IllegalProductOperationException("Product Representation cannot be null")
+        }
+
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
+        if (id == null) {
+            throw ProductNotFoundException("Product id cannot be null")
+        }
+
+        val updatedProduct: Product = this.productService.updateProduct(id, newProduct)
         this.productService.save(updatedProduct)
-        val entityModel = assembler.toModel(updatedProduct)
+        val entityModel = productAssembler.toModel(updatedProduct)
 
         log.info("Updated product entityModel: $entityModel")
         return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel)
@@ -102,7 +139,10 @@ class ProductController(
      * @return An HTTP 204 No Content response
      */
     @DeleteMapping("/{id}")
-    fun deleteProduct(@PathVariable id: String): ResponseEntity<*> {
+    fun deleteProduct(@PathVariable id: String?): ResponseEntity<*> {
+        if (id == null) {
+            throw ProductNotFoundException("Product id cannot be null")
+        }
         this.productService.delete(id)
         return ResponseEntity.noContent().build<Any>()
     }
