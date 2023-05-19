@@ -18,8 +18,8 @@ import project.github.backend.entity.order.exceptions.OrderNotFoundException
 @ExposesResourceFor(Order::class)
 @RequestMapping("/orders")
 class OrderController(
-    private val orderService: OrderService,
-    private val assembler: OrderModelAssembler,
+        private val orderService: OrderService,
+        private val assembler: OrderModelAssembler,
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
 

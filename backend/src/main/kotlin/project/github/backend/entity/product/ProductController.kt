@@ -43,7 +43,11 @@ class ProductController(
                 .withTitle(product.name)
         }
 
-        val model = HalModelBuilder.emptyHalModel().link(selfLink).link(findLink).links(productLinks).build()
+        val model = HalModelBuilder.emptyHalModel()
+                .link(selfLink)
+                .link(findLink)
+                .links(productLinks)
+                .build()
 
         return ResponseEntity.ok(model)
     }
