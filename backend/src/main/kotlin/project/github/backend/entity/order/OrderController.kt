@@ -57,12 +57,14 @@ class OrderController(
      * TODO KDoc
      */
     @PostMapping
-    fun createOrder(@RequestBody payload: OrderRepresentation?): ResponseEntity<*> {
-        val order = orderService.createOrder(payload!!)
-        val model = assembler.toModel(order)
+    fun createOrder(@RequestBody payload: OrderRepresentation?): HttpEntity<*> {
+        if(payload == null) {
+            throw IllegalOrderOperationException("Cannot create an order without products")
+        }
 
-        //TODO return the created order with a created http code
-        return ResponseEntity.ok(model)
+        val orderId = orderService.createOrder(payload).id
+
+        return getOrder(orderId)
     }
 
     /**
