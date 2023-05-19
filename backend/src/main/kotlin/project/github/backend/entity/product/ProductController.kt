@@ -59,6 +59,7 @@ class ProductController(
      */
     @PostMapping()
     fun newProduct(@RequestBody newProduct: ProductRepresentation?): HttpEntity<*> {
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
         if (newProduct == null) {
             throw IllegalProductOperationException("Product representation cannot be null")
         }
@@ -81,17 +82,17 @@ class ProductController(
         }
         val product = this.productService.getProduct(id)
 
-        val productControllerProxy = methodOn(ProductController::class.java)
+        val proxyControllerClass = methodOn(ProductController::class.java)
 
-        val updateTemplate = afford(productControllerProxy.replaceProduct(null, null))
-        val deleteTemplate = afford(productControllerProxy.deleteProduct(null))
+        val updateTemplate = afford(proxyControllerClass.replaceProduct(null, null))
+        val deleteTemplate = afford(proxyControllerClass.deleteProduct(null))
 
         val templates = listOf(updateTemplate, deleteTemplate)
 
-        val selfLink = linkTo(productControllerProxy.getProduct(id)).withSelfRel()
+        val selfLink = linkTo(proxyControllerClass.getProduct(id)).withSelfRel()
             .andAffordances(templates)
-        val allLink = linkTo(productControllerProxy.all()).withRel("all")
-        val findLink = linkTo(productControllerProxy.getProduct(null)).withRel("find")
+        val allLink = linkTo(proxyControllerClass.all()).withRel("all")
+        val findLink = linkTo(proxyControllerClass.getProduct(null)).withRel("find")
 
         val links = listOf(selfLink, allLink, findLink)
 
@@ -136,6 +137,7 @@ class ProductController(
      */
     @DeleteMapping("/{id}")
     fun deleteProduct(@PathVariable id: String?): ResponseEntity<*> {
+        //https://github.com/spring-projects/spring-hateoas/issues/1186
         if (id == null) {
             throw ProductNotFoundException("Product id cannot be null")
         }
