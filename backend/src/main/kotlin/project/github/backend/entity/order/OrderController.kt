@@ -72,12 +72,32 @@ class OrderController(
      * @throws OrderNotFoundException If no order with the specified [id] is found in the [OrderRepository].
      */
     @GetMapping("/{id}")
-    fun getOrder(@PathVariable id: Long?): EntityModel<Order> {
+    fun getOrder(@PathVariable id: Long?): HttpEntity<*> {
         if (id == null) {
             throw OrderNotFoundException(null)
         }
         val order = orderService.getOrder(id)
-        return assembler.toModel(order)
+
+        val proxyControllerClass = methodOn(OrderController::class.java)
+
+        val completeTemplate = afford(proxyControllerClass.complete(null))
+        val cancelTemplate = afford(proxyControllerClass.cancel(null))
+
+        val templates = listOf(completeTemplate, cancelTemplate)
+
+        val selfLink = linkTo(proxyControllerClass.getOrder(id)).withSelfRel()
+            .andAffordances(templates)
+        val allLink = linkTo(proxyControllerClass.orders()).withRel("all")
+        val findLink = linkTo(proxyControllerClass.getOrder(null)).withRel("find")
+
+        val links = listOf(selfLink, allLink, findLink)
+
+        val model = HalModelBuilder.halModel()
+            .embed(order)
+            .links(links)
+            .build()
+
+        return ResponseEntity.ok(model)
     }
 
     /**
