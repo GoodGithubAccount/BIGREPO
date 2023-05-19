@@ -81,17 +81,13 @@ class OrderController(
 
         val proxyControllerClass = methodOn(OrderController::class.java)
 
-        val completeTemplate = afford(proxyControllerClass.complete(null))
-        val cancelTemplate = afford(proxyControllerClass.cancel(null))
-
-        val templates = listOf(completeTemplate, cancelTemplate)
-
         val selfLink = linkTo(proxyControllerClass.getOrder(id)).withSelfRel()
-            .andAffordances(templates)
+        val completeLink = linkTo(proxyControllerClass.complete(id)).withRel("complete")
+        val cancelLink = linkTo(proxyControllerClass.cancel(id)).withRel("cancel")
         val allLink = linkTo(proxyControllerClass.orders()).withRel("all")
         val findLink = linkTo(proxyControllerClass.getOrder(null)).withRel("find")
 
-        val links = listOf(selfLink, allLink, findLink)
+        val links = listOf(selfLink, completeLink, cancelLink, allLink, findLink)
 
         val model = HalModelBuilder.halModel()
             .embed(order)
