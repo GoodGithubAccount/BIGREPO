@@ -104,9 +104,13 @@ class OrderController(
      * @throws IllegalOrderCancellationException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @DeleteMapping("/{id}/cancel")
-    fun cancel(@PathVariable id: Long): EntityModel<*> {
-        val order = orderService.cancelOrder(id).also { orderService.save(it) }
-        log.info("Order cancelled: $order")
-        return assembler.toModel(order)
+    fun cancel(@PathVariable id: Long?): HttpEntity<*> {
+        if (id == null) {
+            throw OrderNotFoundException(null)
+        }
+
+        orderService.cancelOrder(id)
+
+        return getOrder(id)
     }
 }
