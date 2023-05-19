@@ -42,10 +42,10 @@ class OrderController(
                 .withTitle(order.id.toString())
         }
 
+        val links = listOf(selfLink, findLink).plus(orderLinks)
+
         val model = HalModelBuilder.emptyHalModel()
-            .link(selfLink)
-            .link(findLink)
-            .links(orderLinks)
+            .links(links)
             .build()
 
         return ResponseEntity.ok(model)
