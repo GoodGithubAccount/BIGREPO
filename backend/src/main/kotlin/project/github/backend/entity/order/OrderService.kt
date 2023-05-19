@@ -68,6 +68,9 @@ class OrderService(
             throw IllegalOrderCancellationException(id, order.status)
         }
         order.status = Status.CANCELLED
+
+        orderRepository.save(order)
+
         return order
     }
 
