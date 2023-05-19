@@ -14,13 +14,11 @@ import project.github.backend.entity.product.exception.ProductNotFoundException
 /**
  * This class represents the [RestController] for handling HTTP requests related to [Product] entities.
  * It defines several endpoints for managing CRUD operations of the [Product] entities.
- * @param productAssembler The [ProductModelAssembler] instance used to convert [Product] entities to [EntityModel]s.
- * @param productService The [ProductService] instance used to perform CRUD operations on [Product] entities.
+  * @param productService The [ProductService] instance used to perform CRUD operations on [Product] entities.
  */
 @RestController
 @RequestMapping("/products")
 class ProductController(
-    private val productAssembler: ProductModelAssembler,
     private val productService: ProductService
 ) {
     private val log: Logger = LoggerFactory.getLogger(ProductController::class.java)
