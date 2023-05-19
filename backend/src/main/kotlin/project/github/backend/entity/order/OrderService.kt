@@ -50,6 +50,9 @@ class OrderService(
             throw IllegalOrderCompletionException(id, order.status)
         }
         order.status = Status.COMPLETED
+
+        orderRepository.save(order)
+
         return order
     }
 
