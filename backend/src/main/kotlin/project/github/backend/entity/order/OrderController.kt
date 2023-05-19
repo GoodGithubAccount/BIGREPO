@@ -87,9 +87,14 @@ class OrderController(
      * @throws IllegalOrderCompletionException If the order [Status] is already COMPLETED or CANCELLED.
      */
     @PutMapping("/{id}/complete")
-    fun complete(@PathVariable id: Long): EntityModel<*> {
-        val order = orderService.completeOrder(id)
-        return assembler.toModel(orderService.save(order))
+    fun complete(@PathVariable id: Long?): HttpEntity<*> {
+        if (id == null) {
+            throw OrderNotFoundException(null)
+        }
+
+        orderService.completeOrder(id).id
+
+        return getOrder(id)
     }
 
     /**
