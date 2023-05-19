@@ -12,17 +12,16 @@ import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
 import project.github.backend.entity.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.entity.order.exceptions.IllegalOrderCompletionException
+import project.github.backend.entity.order.exceptions.IllegalOrderOperationException
 import project.github.backend.entity.order.exceptions.OrderNotFoundException
 
 @RestController
 @ExposesResourceFor(Order::class)
 @RequestMapping("/orders")
 class OrderController(
-        private val orderService: OrderService,
-        private val assembler: OrderModelAssembler,
+    private val orderService: OrderService,
 ) {
     private val log: Logger = LoggerFactory.getLogger(LoadDatabase::class.java)
-
 
     /**
      * TODO KDoc
@@ -34,20 +33,20 @@ class OrderController(
         val proxyControllerClass = methodOn(OrderController::class.java)
 
         val selfLink = linkTo(proxyControllerClass.orders()).withSelfRel()
-                .andAffordance(afford(proxyControllerClass.createOrder(null)))
+            .andAffordance(afford(proxyControllerClass.createOrder(null)))
 
         val findLink = linkTo(proxyControllerClass.getOrder(null)).withRel("find")
 
         val orderLinks = allOrders.map { order ->
             linkTo(proxyControllerClass.getOrder(order.id)).withRel("product")
-                    .withTitle(order.id.toString())
+                .withTitle(order.id.toString())
         }
 
         val model = HalModelBuilder.emptyHalModel()
-                .link(selfLink)
-                .link(findLink)
-                .links(orderLinks)
-                .build()
+            .link(selfLink)
+            .link(findLink)
+            .links(orderLinks)
+            .build()
 
         return ResponseEntity.ok(model)
     }
@@ -58,7 +57,7 @@ class OrderController(
      */
     @PostMapping
     fun createOrder(@RequestBody payload: OrderRepresentation?): HttpEntity<*> {
-        if(payload == null) {
+        if (payload == null) {
             throw IllegalOrderOperationException("Cannot create an order without products")
         }
 

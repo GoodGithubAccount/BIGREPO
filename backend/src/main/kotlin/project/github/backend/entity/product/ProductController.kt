@@ -91,7 +91,7 @@ class ProductController(
         val selfLink = linkTo(productControllerProxy.getProduct(id)).withSelfRel()
             .andAffordances(templates)
         val allLink = linkTo(productControllerProxy.all()).withRel("all")
-        val findLink = linkTo(methodOn(ProductController::class.java).getProduct(null)).withRel("find")
+        val findLink = linkTo(productControllerProxy.getProduct(null)).withRel("find")
 
         val links = listOf(selfLink, allLink, findLink)
 
