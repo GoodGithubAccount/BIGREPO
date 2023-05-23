@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import project.github.backend.LoadDatabase
+import project.github.backend.entity.basket.BasketController
 import project.github.backend.entity.order.exceptions.IllegalOrderCancellationException
 import project.github.backend.entity.order.exceptions.IllegalOrderCompletionException
 import project.github.backend.entity.order.exceptions.IllegalOrderOperationException
@@ -86,8 +87,9 @@ class OrderController(
         val cancelLink = linkTo(proxyControllerClass.cancel(id)).withRel("cancel")
         val allLink = linkTo(proxyControllerClass.orders()).withRel("all")
         val findLink = linkTo(proxyControllerClass.getOrder(null)).withRel("find")
+        val basketLink = linkTo(methodOn(BasketController::class.java).getBasket(order.basket!!.id!!)).withRel("basket")
 
-        val links = listOf(selfLink, completeLink, cancelLink, allLink, findLink)
+        val links = listOf(selfLink, completeLink, cancelLink, allLink, findLink, basketLink)
 
         val model = HalModelBuilder.halModel()
             .embed(order)
