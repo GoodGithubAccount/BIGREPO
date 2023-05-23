@@ -19,8 +19,6 @@ import project.github.backend.entity.product.ProductController
 @RequestMapping("/basket")
 class BasketController(
     private val basketService: BasketService,
-    private val basketAssembler: BasketModelAssembler,
-    private val basketProductAssembler: BasketProductModelAssembler
 ) {
 
     @GetMapping("/{id}")
@@ -55,8 +53,25 @@ class BasketController(
     }
 
     @GetMapping("/{basketId}/products/{productId}")
-    fun getBasketProduct(@PathVariable basketId: Long, @PathVariable productId: Long): EntityModel<BasketProduct> {
+    fun getBasketProduct(@PathVariable basketId: Long, @PathVariable productId: Long): HttpEntity<*> {
         val basketProduct = basketService.getBasketProduct(basketId, productId)
-        return basketProductAssembler.toModel(basketProduct)
+
+        val proxyControllerClass = methodOn(BasketController::class.java)
+
+        val selfLink = linkTo(proxyControllerClass.getBasketProduct(basketId, productId)).withSelfRel()
+        val basketLink = linkTo(proxyControllerClass.getBasket(basketId)).withRel("basket")
+        val orderLink =
+            linkTo(methodOn(OrderController::class.java).getOrder(basketProduct.basket.order!!.id)).withRel("order")
+        val productLink =
+            linkTo(methodOn(ProductController::class.java).getProduct(basketProduct.productId)).withRel("product")
+
+        val links = listOf(selfLink, basketLink, orderLink, productLink)
+
+        val model = HalModelBuilder.halModel()
+            .embed(basketProduct)
+            .links(links)
+            .build()
+
+        return ResponseEntity.ok(model)
     }
 }
